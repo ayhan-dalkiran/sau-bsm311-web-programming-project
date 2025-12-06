@@ -6,7 +6,7 @@ Proje Spor Salonu Yönetim ve Randevu Sistemi olarak geliştirilmiştir. Sistem,
 ## Projede Kullanılan Teknolojiler
 - Arkayüz için ASP.NET Core MVC, .NET 8, C#
 - Önyüz için HTML5, CSS3, Bootstrap 5, JavaScript, jQuery
-- Veritabanı için PostgreSQL
+- Veritabanı için SQL Server
 
 ## Projeyi Geliştirenler
 - G221210020 - Ayhan Dalkıran
