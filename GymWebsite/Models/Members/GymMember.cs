@@ -1,7 +1,7 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations; 
+using System.ComponentModel.DataAnnotations;
 
-namespace GymWebsite.Models {
+namespace GymWebsite.Models.Members {
     public class GymMember {
         
         public int Id { get; set; }
