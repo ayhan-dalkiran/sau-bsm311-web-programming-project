@@ -13,12 +13,12 @@ public class Trainer {
 
     // Bir antrenörün birden fazla "Müsaitlik Zamanı" olabilir.
     // (Pazartesi için ayrı, Salı için ayrı satırlar gibi)
-    public ICollection<TrainerAvailability> Availabilities { get; set; } = new List<TrainerAvailability>();
+    public ICollection<WeekDayTimeSpan> Availabilities { get; set; } = [];
 
     // Antrenörün yapabildiklerini (Uzmanlıklarını) burada ilişkilendiriyoruz.
     // Bir antrenörün birden fazla uzmanlığı olabilir.
-    public ICollection<Specialty> Specialties { get; set; } = new List<Specialty>();
+    public ICollection<Specialty> Specialties { get; set; } = [];
 
     // Antrenörün randevularını görebilmesi için
-    public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+    public ICollection<Appointment> Appointments { get; set; } = [];
 }
