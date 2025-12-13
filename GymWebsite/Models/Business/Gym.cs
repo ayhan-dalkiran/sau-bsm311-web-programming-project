@@ -1,26 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GymWebsite.Models.Business {
-    public class Gym {
-        public int Id { get; set; }
+namespace GymWebsite.Models.Business;
 
-        [Display(Name = "Salon Adı")]
-        public string Name { get; set; } = "Benim Spor Salonum";
+public class Gym {
+    [Key]
+    public int Id { get; set; }
 
-        [Display(Name = "Adres")]
-        public string? Address { get; set; }
+    [Display(Name = "Salon Adı")]
+    [Required(ErrorMessage = "Salon adı gereklidir.")]
+    public string Name { get; set; } = "Benim Spor Salonum";
 
-        [Display(Name = "Telefon")]
-        public string? PhoneNumber { get; set; }
+    [Display(Name = "Adres")]
+    public string? Address { get; set; }
 
-        // Çalışma Saatleri (Basit metin olarak tutabiliriz)
-        [Display(Name = "Hafta İçi Çalışma Saatleri")]
-        public string OpeningHoursWeekdays { get; set; } = "09:00 - 22:00";
+    [Display(Name = "Telefon")]
+    public string? PhoneNumber { get; set; }
 
-        [Display(Name = "Hafta Sonu Çalışma Saatleri")]
-        public string OpeningHoursWeekend { get; set; } = "10:00 - 20:00";
+    // Çalışma Saatleri (Basit metin olarak tutabiliriz)
+    [Display(Name = "Hafta İçi Çalışma Saatleri")]
+    public string OpeningHoursWeekdays { get; set; } = "09:00 - 22:00";
 
-        // Salonun sunduğu hizmetler listesi
-        public ICollection<GymService> Services { get; set; } = new List<GymService>();
-    }
+    [Display(Name = "Hafta Sonu Çalışma Saatleri")]
+    public string OpeningHoursWeekend { get; set; } = "10:00 - 20:00";
+
+    // Salonun sunduğu hizmetler listesi
+    public ICollection<GymService> Services { get; set; } = new List<GymService>();
 }

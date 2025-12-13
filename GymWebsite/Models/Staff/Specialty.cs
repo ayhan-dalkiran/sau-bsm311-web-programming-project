@@ -1,11 +1,13 @@
-﻿namespace GymWebsite.Models.Staff {
-    public class Specialty {
-        public int Id { get; set; }
+﻿using System.ComponentModel.DataAnnotations;
 
-        // Örneğin: "Fitness", "Yoga", "Pilates"
-        public string Name { get; set; } = string.Empty;
+namespace GymWebsite.Models.Staff; 
+public class Specialty {
+    [Key]
+    public int Id { get; set; }
 
-        // Bu uzmanlığa sahip antrenörleri listelemek için (İsteğe bağlı, ilişki için)
-        public ICollection<Trainer>? Trainers { get; set; }
-    }
+    // Örneğin: "Fitness", "Yoga", "Pilates"
+    public string Name { get; set; } = string.Empty;
+
+    // Bu uzmanlığa sahip antrenörleri listelemek için (İsteğe bağlı, ilişki için)
+    public ICollection<Trainer>? Trainers { get; set; }
 }
