@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -9,20 +10,24 @@ public class Gym {
     [HiddenInput]
     public int Id { get; set; }
 
+    [Unicode]
+    [Required(ErrorMessage = "Salon adı boş olamaz.")]
+    [MaxLength(100, ErrorMessage = "Salon adı 100 karakterden fazla olamaz.")]
     [Display(Name = "Salon Adı")]
-    [Required(ErrorMessage = "Salon adı gereklidir.")]
-    [StringLength(100)]
-    public string Name { get; set; } = "Benim Spor Salonum";
+    public required string Name { get; set; }
 
+    [Unicode]
+    [MaxLength(250, ErrorMessage = "Salon adresi 250 karakterden fazla olamaz.")]
     [Display(Name = "Adres")]
-    [StringLength(200)]
     public string? Address { get; set; }
 
-    [Display(Name = "Telefon")]
     [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
+    [Display(Name = "Telefon")]
     public string? PhoneNumber { get; set; }
 
-    public ICollection<WeekDayTimeSpan> OpenHours { get; set; } = [];
+    public ICollection<GymOpenDayTimeSpan> OpenDayTimeSpans { get; set; } = [];
+
+    public ICollection<GymService> Services { get; set; } = [];
 
     /*
     // Çalışma Saatleri (Basit metin olarak tutabiliriz)
@@ -34,5 +39,4 @@ public class Gym {
     */
 
     // Salonun sunduğu hizmetler listesi
-    public ICollection<GymService> Services { get; set; } = [];
 }
