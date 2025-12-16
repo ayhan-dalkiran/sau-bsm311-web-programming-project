@@ -4,13 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GymWebsite.Models.Members; 
+namespace GymWebsite.Models.Users; 
 
-public class GymMember {
-    [Key]
-    [HiddenInput]
-    public int Id { get; set; }
-
+public class GymMember : BaseAppUser {
     [Unicode]
     [Required(ErrorMessage = "Ad alanı zorunludur.")]
     [MaxLength(100, ErrorMessage = "Üye adı 100 karakterden fazla olamaz.")]
@@ -22,12 +18,6 @@ public class GymMember {
     [MaxLength(100, ErrorMessage = "Üye soyadı 100 karakterden fazla olamaz.")]
     [Display(Name = "Soyad")]
     public string LastName { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "E-posta alanı zorunludur.")]
-    [MaxLength(254, ErrorMessage = "E-posta adresi 254 karakterden fazla olamaz.")]
-    [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
-    [Display(Name = "E-posta")]
-    public string Email { get; set; } = string.Empty;
 
     [MaxLength(15, ErrorMessage = "Telefon numarası 15 karakterden fazla olamaz.")]
     [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]

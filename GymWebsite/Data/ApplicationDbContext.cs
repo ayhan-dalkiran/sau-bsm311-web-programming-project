@@ -1,12 +1,13 @@
-﻿using GymWebsite.Models.Business;
-using GymWebsite.Models.Members;
+﻿using GymWebsite.Models;
+using GymWebsite.Models.Business;
 using GymWebsite.Models.Staff;
+using GymWebsite.Models.Users;
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace GymWebsite.Models;
-
-public class GymWebsiteContext : DbContext {
+namespace GymWebsite.Data; 
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options) {
     public DbSet<Gym> Gyms { get; set; }
     public DbSet<GymService> GymServices { get; set; }
     public DbSet<GymOpenDayTimeSpan> GymOpenDayTimeSpans { get; set; }
@@ -16,7 +17,4 @@ public class GymWebsiteContext : DbContext {
     public DbSet<Specialty> Specialties { get; set; }
     public DbSet<Trainer> Trainers { get; set; }
     public DbSet<TrainerOpenDayTimeSpan> TrainerOpenDayTimeSpans { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=GymWebsiteDB;Trusted_Connection=True;");
 }

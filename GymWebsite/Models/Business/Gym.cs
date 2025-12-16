@@ -2,12 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Business;
 
 public class Gym {
     [Key]
     [HiddenInput]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [Unicode]
