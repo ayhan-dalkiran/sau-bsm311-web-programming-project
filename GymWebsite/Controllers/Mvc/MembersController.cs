@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GymWebsite.Controllers;
+namespace GymWebsite.Controllers.Mvc;
 public class MembersController : Controller {
     public IActionResult Index() {
         return View();

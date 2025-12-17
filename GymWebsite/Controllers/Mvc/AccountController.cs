@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GymWebsite.Controllers; 
+namespace GymWebsite.Controllers.Mvc; 
 public class AccountController : Controller {
     public IActionResult Register() {
         return View();

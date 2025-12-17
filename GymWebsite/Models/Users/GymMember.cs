@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Users; 
 
-public class GymMember : BaseAppUser {
+public class GymMember : ApplicationUser {
     [Unicode]
     [Required(ErrorMessage = "Ad alanı zorunludur.")]
     [MaxLength(100, ErrorMessage = "Üye adı 100 karakterden fazla olamaz.")]
@@ -18,12 +18,12 @@ public class GymMember : BaseAppUser {
     [MaxLength(100, ErrorMessage = "Üye soyadı 100 karakterden fazla olamaz.")]
     [Display(Name = "Soyad")]
     public string LastName { get; set; } = string.Empty;
-
+/*
     [MaxLength(15, ErrorMessage = "Telefon numarası 15 karakterden fazla olamaz.")]
     [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
     [Display(Name = "Telefon Numarası")]
     public string? PhoneNumber { get; set; }
-
+*/
     [Display(Name = "Kayıt Tarihi")]
     public DateTime RegistrationDateTime { get; set; }
 

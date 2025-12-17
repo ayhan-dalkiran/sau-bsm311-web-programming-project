@@ -1,4 +1,4 @@
-﻿using GymWebsite.Models.Members;
+﻿using GymWebsite.Models.Users;
 using GymWebsite.Models.Staff;
 
 using Microsoft.AspNetCore.Mvc;
