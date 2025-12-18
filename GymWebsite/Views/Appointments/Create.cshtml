@@ -1,0 +1,159 @@
+﻿@{
+    ViewData["Title"] = "Randevu Al";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Yeni Randevu Oluştur</h2>
+        <p class="text-muted">Size uygun antrenörü ve saati seçerek hemen yerinizi ayırtın.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-calendar-plus me-2"></i>Randevu Detayları</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Hizmet Türü</label>
+                            <select class="form-select form-select-lg" id="serviceSelect" onchange="updateSummary()">
+                                <option value="0" data-price="0" data-duration="0" selected>Seçiniz...</option>
+                                <option value="1" data-price="750" data-duration="60">Birebir Fitness (PT)</option>
+                                <option value="2" data-price="500" data-duration="50">Pilates Dersi</option>
+                                <option value="3" data-price="400" data-duration="45">Yoga Seansı</option>
+                                <option value="4" data-price="300" data-duration="30">Beslenme Danışmanlığı</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Eğitmen Tercihi</label>
+                            <select class="form-select" id="trainerSelect" onchange="updateSummary()">
+                                <option selected disabled>Eğitmen Seçiniz...</option>
+                                <option>Mehmet Demir (Fitness)</option>
+                                <option>Ayşe Yılmaz (Yoga & Pilates)</option>
+                                <option>Caner Kaya (Kardiyo)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tarih</label>
+                            <input type="date" class="form-control" id="dateInput" onchange="updateSummary()">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-block">Müsait Saatler</label>
+                            <div class="btn-group-toggle d-flex flex-wrap gap-2" data-toggle="buttons">
+                                <input type="radio" class="btn-check" name="timeSlot" id="t1" value="09:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t1">09:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t2" value="10:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t2">10:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t3" value="11:30" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t3">11:30</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t4" value="14:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t4">14:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t5" value="16:00" disabled>
+                                <label class="btn btn-outline-secondary text-decoration-line-through" for="t5">16:00</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow border-0 bg-light position-sticky" style="top: 2rem;">
+                <div class="card-body p-4">
+                    <h4 class="card-title fw-bold mb-4">Özet</h4>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Hizmet:</span>
+                        <span class="fw-bold" id="summaryService">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Eğitmen:</span>
+                        <span class="fw-bold" id="summaryTrainer">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tarih & Saat:</span>
+                        <span class="fw-bold text-end" id="summaryDate">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Süre:</span>
+                        <span class="fw-bold" id="summaryDuration">0 dk</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="h5 mb-0">Toplam Tutar:</span>
+                        <span class="h3 text-primary fw-bold mb-0" id="summaryPrice">0 ₺</span>
+                    </div>
+
+                    <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="completeBooking()">
+                        <i class="bi bi-check-circle-fill me-2"></i> Randevuyu Onayla
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedTime = "";
+
+    function updateSummary() {
+        // HTML Elemanlarını Seç
+        const serviceSelect = document.getElementById("serviceSelect");
+        const trainerSelect = document.getElementById("trainerSelect");
+        const dateInput = document.getElementById("dateInput");
+
+        // Seçilen verileri al
+        // selectedOptions[0] -> Seçili olan <option> etiketini yakalar
+        const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+
+        const serviceName = selectedOption.text;
+        const price = selectedOption.getAttribute("data-price");
+        const duration = selectedOption.getAttribute("data-duration");
+
+        const trainerName = trainerSelect.value;
+        const dateValue = dateInput.value;
+
+        // Özeti Güncelle
+        if (serviceSelect.value !== "0") {
+            document.getElementById("summaryService").innerText = serviceName;
+            document.getElementById("summaryPrice").innerText = price + " ₺";
+            document.getElementById("summaryDuration").innerText = duration + " dk";
+        } else {
+            document.getElementById("summaryService").innerText = "-";
+            document.getElementById("summaryPrice").innerText = "0 ₺";
+        }
+
+        if (trainerSelect.selectedIndex !== 0) {
+            document.getElementById("summaryTrainer").innerText = trainerName;
+        }
+
+        // Tarih ve Saati Birleştir
+        let dateTimeString = dateValue ? dateValue : "-";
+        if (selectedTime) {
+            dateTimeString += " / " + selectedTime;
+        }
+        document.getElementById("summaryDate").innerText = dateTimeString;
+    }
+
+    // Saat butonuna tıklanınca çalışır
+    function selectTime(radioBtn) {
+        selectedTime = radioBtn.value;
+        updateSummary();
+    }
+
+    // Onayla butonuna basınca (Backend olmadığı için alert veriyoruz)
+    function completeBooking() {
+        alert("Randevu talebiniz başarıyla alınmıştır! (Simülasyon)");
+    }
+</script>

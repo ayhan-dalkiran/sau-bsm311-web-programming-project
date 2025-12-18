@@ -152,21 +152,21 @@
 
 <script>
     function simulateAI() {
-        // 1. Ekranları tanımla
+        
         var startScreen = document.getElementById("startScreen");
         var loadingScreen = document.getElementById("loadingScreen");
         var resultScreen = document.getElementById("resultScreen");
 
-        // 2. Başlangıç ekranını gizle, yükleniyor ekranını aç
+        
         startScreen.classList.add("d-none");
         startScreen.classList.remove("d-flex");
 
         loadingScreen.classList.remove("d-none");
         resultScreen.classList.add("d-none");
 
-        // 3. 2.5 saniye bekle (Yapay zeka düşünüyormuş gibi)
+        // 2.5 saniye bekle -
         setTimeout(function() {
-            // Yükleniyor'u gizle, Sonucu göster
+            
             loadingScreen.classList.add("d-none");
             resultScreen.classList.remove("d-none");
         }, 2500);
