@@ -1,7 +1,7 @@
 ﻿using GymWebsite.Data;
 using GymWebsite.Models;
 using GymWebsite.Models.Business;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,42 +20,48 @@ namespace GymWebsite.Controllers.Api;
 public class GymsController(ApplicationDbContext context) : Controller {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<List<Gym>> Get(
-        [FromQuery, Range(1, 50, ErrorMessage = "itemCount parameter must be between range [1, 50]")] int limit = 10,
-        [FromQuery, Range(1, int.MaxValue, ErrorMessage = "")] int offset = 0) {
-        var gyms = context.Gyms
-            .AsNoTracking()
-            .Skip(offset)
-            .Take(limit)
-            .ToList();
+    public IActionResult Get(
+        [FromQuery, Range(1, 50, ErrorMessage = "limit parameter must be between range [1, 50]")] int limit = 10,
+        [FromQuery, Range(0, int.MaxValue, ErrorMessage = "offset must be positive")] int offset = 0,
+        [FromQuery] bool descending = false) {
+        var gyms = context.Gyms.AsNoTracking().Skip(offset).Take(limit);
 
-        return gyms;
+        if (descending)
+            gyms.OrderByDescending((Gym gym) => gym.Name);
+        else
+            gyms.OrderBy((Gym gym) => gym.Name);
+
+        return Ok(gyms.ToList());
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Gym> Get(int id) {
+    public IActionResult Get(int id) {
         var gym = context.Gyms.Find(id);
 
-        return gym is null ? NotFound() : gym;
+        return gym is null ? NotFound() : Ok(gym);
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<Gym> Post([FromBody] Gym gym) {
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult Post(Gym gym) {
         context.Gyms.Add(gym);
         context.SaveChanges();
 
-        return gym;
+        return Ok(gym);
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Gym> Patch(int id, [FromBody] Gym gym) {
+    public IActionResult Patch(int id, Gym gym) {
         if (context.Gyms.Find(id) is null)
             return NotFound();
 
@@ -63,11 +69,13 @@ public class GymsController(ApplicationDbContext context) : Controller {
         context.Gyms.Update(gym);
         context.SaveChanges();
 
-        return gym;
+        return Ok(gym);
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult Delete(int id) {
         if (context.Gyms.Find(id) is not Gym gym)

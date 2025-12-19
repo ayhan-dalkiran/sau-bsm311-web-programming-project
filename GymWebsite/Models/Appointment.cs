@@ -12,7 +12,7 @@ public class Appointment {
     [HiddenInput]
     public int Id { get; set; }
 
-    public required GymMember GymMember { get; set; }
+    public required GymUserAccount GymMember { get; set; }
 
     public required Trainer Trainer { get; set; }
 

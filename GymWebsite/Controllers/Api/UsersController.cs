@@ -22,7 +22,7 @@ namespace GymWebsite.Controllers.Api;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : Controller {
+public class UsersController(ApplicationDbContext context, UserManager<GymUserAccount> userManager, SignInManager<GymUserAccount> signInManager) : Controller {
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -57,7 +57,7 @@ public class UsersController(ApplicationDbContext context, UserManager<Applicati
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApplicationUser>> Get(string id) {
+    public async Task<ActionResult<GymUserAccount>> Get(string id) {
         var authUser = await userManager.GetUserAsync(User);
 
         if (authUser is null)
@@ -66,7 +66,7 @@ public class UsersController(ApplicationDbContext context, UserManager<Applicati
         if (!User.IsInRole("Admin") && authUser.Id != id)
             return Unauthorized();
 
-        if (await userManager.FindByIdAsync(id) is not ApplicationUser user)
+        if (await userManager.FindByIdAsync(id) is not GymUserAccount user)
             return NotFound();
 
         return Ok(user);
@@ -74,15 +74,18 @@ public class UsersController(ApplicationDbContext context, UserManager<Applicati
 
     [HttpPost]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<ApplicationUser>> Post(ApplicationUser user) {
-        if (await userManager.FindByNameAsync(user.UserName) is not null)
+    public async Task<ActionResult<GymUserAccount>> Post(GymUserAccount user) {
+        if (await userManager.FindByNameAsync(user.ToString()) is not null)
             return Conflict("Username already exists.");
 
         var result = await userManager.CreateAsync(user);
 
-        return Ok(user);
+        if (!result.Succeeded)
+            return Conflict(result.Errors);
+
+        return NoContent();
     }
 
     [HttpPatch("{id}")]

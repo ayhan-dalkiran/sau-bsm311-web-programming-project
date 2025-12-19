@@ -1,4 +1,5 @@
 using GymWebsite.Data;
+using GymWebsite.Models.Business;
 using GymWebsite.Models.Roles;
 using GymWebsite.Models.Users;
 using Microsoft.AspNetCore.Identity;
@@ -13,20 +14,12 @@ internal class Program {
         builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         builder.Services.AddControllersWithViews();
-        /*
-        builder.Services.AddIdentity<ApplicationUser, ApplicationUserRole>(options => {
-            options.Password.RequiredLength = 6;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireDigit = true;
-            options.Password.RequireNonAlphanumeric = true;
-        });*/
-        builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireDigit = true;
-                options.Password.RequireNonAlphanumeric = true;
+        builder.Services.AddDefaultIdentity<GymUserAccount>(options => {
+                options.Password.RequiredLength = 3;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
             })
             .AddRoles<ApplicationUserRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -56,6 +49,44 @@ internal class Program {
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
+
+        using (var scope = app.Services.CreateScope()) {
+            var services = scope.ServiceProvider;
+            var userManager = services.GetRequiredService<UserManager<GymUserAccount>>();
+            var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
+            if (userManager.FindByEmailAsync("g221210020@sakarya.edu.tr").Result is null) {
+                userManager.CreateAsync(new GymUserAccount {
+                    UserName = "g221210020",
+                    Email = "g221210020@sakarya.edu.tr",
+                    PhoneNumber = "901234567890",
+                    FirstName = "Admin",
+                    LastName = "Adminson",
+                    RegistrationDateTime = DateTime.UnixEpoch
+                }, "sau").Wait();
+            }
+
+            if (userManager.FindByEmailAsync("g231210080@sakarya.edu.tr").Result is null) {
+                userManager.CreateAsync(new GymUserAccount {
+                    UserName = "g231210080",
+                    Email = "g231210080@sakarya.edu.tr",
+                    PhoneNumber = "901234567890",
+                    FirstName = "Hadmin",
+                    LastName = "Hadminson",
+                    RegistrationDateTime = DateTime.UnixEpoch
+                }, "sau").Wait();
+            }
+
+            if (dbContext.Gyms.Find(1) is null) {
+                dbContext.Gyms.Add(new Gym {
+                    Name = "Power Gym Center",
+                    Address = "Atatürk Caddesi, No: 123 Merkez / İstanbul",
+                    PhoneNumber = "02125555555",
+                    Email = "info@powergym.com",
+                });
+                dbContext.SaveChanges();
+            }
+        }
 
         app.Run();
     }
