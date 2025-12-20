@@ -1,0 +1,53 @@
+﻿@model GymWebsite.Models.Users.GymUserAccount
+
+@{
+    ViewData["Title"] = "Yeni Üye Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-dark">Yeni Üye Kaydı</h3>
+            <a href="/AdminPanel/Users" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Dön</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="CreateUser" method="post">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">AD</label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Örn: Ali" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">SOYAD</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Örn: Veli" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">E-POSTA ADRESİ</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="ornek@mail.com" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">TELEFON NUMARASI</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="0555 123 45 67" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted">BAŞLANGIÇ ŞİFRESİ</label>
+                        <input type="password" name="Password" class="form-control" placeholder="******" required />
+                        <div class="form-text">Üye ilk girişinde bu şifreyi kullanacaktır.</div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-bold">KAYDET</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

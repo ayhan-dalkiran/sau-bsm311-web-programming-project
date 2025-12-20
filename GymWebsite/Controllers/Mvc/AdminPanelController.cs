@@ -41,7 +41,70 @@ public class AdminPanelController : Controller {
         return View("Gyms", model);
     }
 
-    public ActionResult Users() => View();
+    public ActionResult Users() {
+        // Test için sahte üye listesi
+        var userList = new List<GymWebsite.Models.Users.GymUserAccount>
+        {
+            new GymWebsite.Models.Users.GymUserAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
+            new GymWebsite.Models.Users.GymUserAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
+            new GymWebsite.Models.Users.GymUserAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
+        };
+
+        return View(userList);
+    }
+
+    // Yeni Üye Ekleme (GET)
+    public ActionResult CreateUser() {
+        return View();
+    }
+
+    // Yeni Üye Ekleme (POST)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult CreateUser(GymWebsite.Models.Users.GymUserAccount model, string Password) {
+        // Not: Gerçek backend'de burada UserManager.CreateAsync kullanılacak.
+        // Şimdilik listeye dönüyoruz.
+        return RedirectToAction(nameof(Users));
+    }
+
+    // Üye Düzenleme (GET)
+    public ActionResult EditUser(string id) {
+        // Test verisi
+        var fakeUser = new GymWebsite.Models.Users.GymUserAccount {
+            Id = id,
+            FirstName = "Test",
+            LastName = "Kullanıcı",
+            Email = "test@kullanici.com",
+            PhoneNumber = "0555 123 45 67"
+        };
+        return View(fakeUser);
+    }
+
+    // Üye Düzenleme (POST)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult EditUser(GymWebsite.Models.Users.GymUserAccount model) {
+        return RedirectToAction(nameof(Users));
+    }
+
+    // Üye Silme (GET)
+    public ActionResult DeleteUser(string id) {
+        var fakeUser = new GymWebsite.Models.Users.GymUserAccount {
+            Id = id,
+            FirstName = "Silinecek",
+            LastName = "Üye",
+            Email = "sil@mail.com"
+        };
+        return View(fakeUser);
+    }
+
+    // Üye Silme (POST)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult DeleteUser(string id, IFormCollection collection) {
+        return RedirectToAction(nameof(Users));
+    }
+
 
     public ActionResult Trainers() => View();
 

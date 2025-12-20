@@ -1,34 +1,66 @@
-﻿@{
+﻿@model IEnumerable<GymWebsite.Models.Users.GymUserAccount>
+
+@{
     ViewData["Title"] = "Üye Yönetimi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="mb-4">
-    <h3 class="fw-bold text-dark">Üyeler</h3>
-    <p class="text-muted">Kayıtlı kullanıcıları görüntüle ve düzenle.</p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-1">Üyeler</h3>
+        <p class="text-muted mb-0">Sisteme kayıtlı sporcuları yönetin.</p>
+    </div>
+    <a href="/AdminPanel/CreateUser" class="btn btn-primary">
+        <i class="bi bi-person-plus-fill me-2"></i> Yeni Üye Ekle
+    </a>
 </div>
 
 <div class="card border-0 shadow-sm">
-    <div class="card-body">
-        <table class="table table-hover align-middle">
-            <thead>
-                <tr>
-                    <th>Ad Soyad</th>
-                    <th>E-posta</th>
-                    <th>Kayıt Tarihi</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Mehmet Demir</td>
-                    <td>mehmet@mail.com</td>
-                    <td>20.12.2025</td>
-                    <td>
-                        <button class="btn btn-sm btn-light border">Detay</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Ad Soyad</th>
+                        <th>İletişim</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>Durum</th>
+                        <th class="text-end pe-4">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 40px; height: 40px;">
+                                        @item.FirstName?.Substring(0, 1)@item.LastName?.Substring(0, 1)
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">@item.FirstName @item.LastName</div>
+                                        <div class="small text-muted">ID: @item.Id</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small"><i class="bi bi-envelope me-1"></i> @item.Email</div>
+                                <div class="small text-muted"><i class="bi bi-telephone me-1"></i> @item.PhoneNumber</div>
+                            </td>
+                            <td>@item.RegistrationDateTime.ToString("dd.MM.yyyy")</td>
+                            <td><span class="badge bg-success">Aktif</span></td>
+                            <td class="text-end pe-4">
+                                <a href="/AdminPanel/EditUser?id=@item.Id" class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="/AdminPanel/DeleteUser?id=@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
