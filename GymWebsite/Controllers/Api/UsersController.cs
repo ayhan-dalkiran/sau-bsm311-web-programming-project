@@ -3,7 +3,6 @@
 using GymWebsite.Data;
 using GymWebsite.Models;
 using GymWebsite.Models.Business;
-using GymWebsite.Models.Dto;
 using GymWebsite.Models.Users;
 
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +21,7 @@ namespace GymWebsite.Controllers.Api;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(ApplicationDbContext context, UserManager<GymUserAccount> userManager, SignInManager<GymUserAccount> signInManager) : Controller {
+public class UsersController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager, SignInManager<UserIdentityAccount> signInManager) : Controller {
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -57,7 +56,7 @@ public class UsersController(ApplicationDbContext context, UserManager<GymUserAc
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<GymUserAccount>> Get(string id) {
+    public async Task<ActionResult<UserIdentityAccount>> Get(string id) {
         var authUser = await userManager.GetUserAsync(User);
 
         if (authUser is null)
@@ -66,7 +65,7 @@ public class UsersController(ApplicationDbContext context, UserManager<GymUserAc
         if (!User.IsInRole("Admin") && authUser.Id != id)
             return Unauthorized();
 
-        if (await userManager.FindByIdAsync(id) is not GymUserAccount user)
+        if (await userManager.FindByIdAsync(id) is not UserIdentityAccount user)
             return NotFound();
 
         return Ok(user);
@@ -76,7 +75,7 @@ public class UsersController(ApplicationDbContext context, UserManager<GymUserAc
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<GymUserAccount>> Post(GymUserAccount user) {
+    public async Task<ActionResult<UserIdentityAccount>> Post(UserIdentityAccount user) {
         if (await userManager.FindByNameAsync(user.ToString()) is not null)
             return Conflict("Username already exists.");
 

@@ -45,11 +45,11 @@ public class AdminPanelController : Controller {
 
     public ActionResult Users() {
         // Test için sahte üye listesi
-        var userList = new List<GymWebsite.Models.Users.GymUserAccount>
+        var userList = new List<GymWebsite.Models.Users.UserIdentityAccount>
         {
-            new GymWebsite.Models.Users.GymUserAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
-            new GymWebsite.Models.Users.GymUserAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
-            new GymWebsite.Models.Users.GymUserAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
+            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
+            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
+            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
         };
 
         return View(userList);
@@ -63,7 +63,7 @@ public class AdminPanelController : Controller {
     // Yeni Üye Ekleme (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult CreateUser(GymWebsite.Models.Users.GymUserAccount model, string Password) {
+    public ActionResult CreateUser(GymWebsite.Models.Users.UserIdentityAccount model, string Password) {
         // Not: Gerçek backend'de burada UserManager.CreateAsync kullanılacak.
         // Şimdilik listeye dönüyoruz.
         return RedirectToAction(nameof(Users));
@@ -72,7 +72,7 @@ public class AdminPanelController : Controller {
     // Üye Düzenleme (GET)
     public ActionResult EditUser(string id) {
         // Test verisi
-        var fakeUser = new GymWebsite.Models.Users.GymUserAccount {
+        var fakeUser = new GymWebsite.Models.Users.UserIdentityAccount {
             Id = id,
             FirstName = "Test",
             LastName = "Kullanıcı",
@@ -85,13 +85,13 @@ public class AdminPanelController : Controller {
     // Üye Düzenleme (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult EditUser(GymWebsite.Models.Users.GymUserAccount model) {
+    public ActionResult EditUser(GymWebsite.Models.Users.UserIdentityAccount model) {
         return RedirectToAction(nameof(Users));
     }
 
     // Üye Silme (GET)
     public ActionResult DeleteUser(string id) {
-        var fakeUser = new GymWebsite.Models.Users.GymUserAccount {
+        var fakeUser = new GymWebsite.Models.Users.UserIdentityAccount {
             Id = id,
             FirstName = "Silinecek",
             LastName = "Üye",

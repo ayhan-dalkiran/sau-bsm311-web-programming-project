@@ -12,23 +12,21 @@ internal class Program {
         // Add services to the container.
         string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlOptions => {
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5, // Maksimum 5 kere dene
-            maxRetryDelay: TimeSpan.FromSeconds(10), // Denemeler arası 10 saniye bekle
-            errorNumbersToAdd: null);
-    }));
+        options.UseSqlServer(connectionString, sqlOptions => {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5, // Maksimum 5 kere dene
+                maxRetryDelay: TimeSpan.FromSeconds(10), // Denemeler arası 10 saniye bekle
+                errorNumbersToAdd: null);
+        }));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         builder.Services.AddControllersWithViews();
-        builder.Services.AddDefaultIdentity<GymUserAccount>(options => {
+        builder.Services.AddDefaultIdentity<UserIdentityAccount>(options => {
                 options.Password.RequiredLength = 3;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
-            })
-            .AddRoles<ApplicationUserRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
         //builder.Services.AddScoped<I>();
 
@@ -58,14 +56,14 @@ internal class Program {
 
         using (var scope = app.Services.CreateScope()) {
             var services = scope.ServiceProvider;
-            var userManager = services.GetRequiredService<UserManager<GymUserAccount>>();
+            var userManager = services.GetRequiredService<UserManager<UserIdentityAccount>>();
             var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
            //Veritabanı yoksa oluşturur ve bekleyen migrationları uygular.
             dbContext.Database.Migrate();
 
-            if (userManager.FindByEmailAsync("g221210020@sakarya.edu.tr").Result is null) {
-                userManager.CreateAsync(new GymUserAccount {
+            if (userManager.FindByNameAsync("g221210020").Result is null) {
+                userManager.CreateAsync(new UserIdentityAccount {
                     UserName = "g221210020",
                     Email = "g221210020@sakarya.edu.tr",
                     PhoneNumber = "901234567890",
@@ -75,8 +73,8 @@ internal class Program {
                 }, "sau").Wait();
             }
 
-            if (userManager.FindByEmailAsync("g231210080@sakarya.edu.tr").Result is null) {
-                userManager.CreateAsync(new GymUserAccount {
+            if (userManager.FindByNameAsync("g231210080").Result is null) {
+                userManager.CreateAsync(new UserIdentityAccount {
                     UserName = "g231210080",
                     Email = "g231210080@sakarya.edu.tr",
                     PhoneNumber = "901234567890",

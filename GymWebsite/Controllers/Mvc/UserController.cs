@@ -1,14 +1,13 @@
 ﻿using GymWebsite.Data;
 using GymWebsite.Models.Business;
-using GymWebsite.Models.Dto;
 using GymWebsite.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymWebsite.Controllers.Mvc; 
-public class UserController(ApplicationDbContext context, UserManager<GymUserAccount> userManager, SignInManager<GymUserAccount> signInManager) : Controller {
-    public async Task<ActionResult> Register() {
+public class UserController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager, SignInManager<UserIdentityAccount> signInManager) : Controller {
+    public async Task<ActionResult> Login() {
         var currentUser = await userManager.GetUserAsync(User);
 
         if (currentUser is null)
@@ -17,13 +16,20 @@ public class UserController(ApplicationDbContext context, UserManager<GymUserAcc
         return RedirectToAction("Index");
     }
 
-    public async Task<ActionResult> Login(UserLogin userLogin) {
-        var currentUser = await userManager.GetUserAsync(User);
+    public async Task<ActionResult> Authenticate(UserLogin userLogin) {
+        if (!ModelState.IsValid) {
+            TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
+            return RedirectToAction("Login");
+        }
 
-        if (currentUser is null)
-            return View();
+        var result = await signInManager.PasswordSignInAsync(userLogin.Username, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
 
-        return RedirectToAction("Index");
+        if (!result.Succeeded) {
+            TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
+            return RedirectToAction("Login");
+        }
+
+        return RedirectToAction("Index", "Home");
     }
 
     public async Task<ActionResult> Logout() {
@@ -33,38 +39,37 @@ public class UserController(ApplicationDbContext context, UserManager<GymUserAcc
     }
 
     public async Task<ActionResult> Index() {
-        var currentUser = await userManager.GetUserAsync(User);
-
-        if (currentUser is null)
+        if (!signInManager.IsSignedIn(User))
             return RedirectToAction("Register");
 
-        return RedirectToAction("Details", new { id = currentUser.Id });
+        return RedirectToAction("Details");
     }
 
+    //Read (View)
+    //Update (View)
     [Authorize]
-    public async Task<ActionResult> Details(string id) {
+    public async Task<ActionResult> Details() {
         var currentUser = await userManager.GetUserAsync(User);
-        
-        if (currentUser == null)
-            return Unauthorized();
 
-        if (!await userManager.IsInRoleAsync(currentUser, "Admin") && currentUser.Id != id)
-            return Unauthorized();
-
-        return View();
+        return View(currentUser!);
     }
 
-    public async Task<ActionResult> Authenticate(UserLogin userLogin) {
-        var result = await signInManager.PasswordSignInAsync(userLogin.Username, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
+    //Create (View)
+    public async Task<ActionResult> Register() {
+        if (!signInManager.IsSignedIn(User))
+            return View();
 
-        if (!result.Succeeded)
-            return Unauthorized();
-
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index");
     }
 
+    //Create
     public async Task<ActionResult> Create(UserDetails userDetails) {
-        var user = new GymUserAccount {
+        if (!ModelState.IsValid) {
+            TempData["ErrorMessage"] = "Hata! Kullanıcı oluşturulamadı";
+            return RedirectToAction("Register");
+        }
+
+        var user = new UserIdentityAccount {
             UserName = userDetails.UserName,
             Email = userDetails.Email,
             FirstName = userDetails.FirstName,
@@ -74,50 +79,50 @@ public class UserController(ApplicationDbContext context, UserManager<GymUserAcc
         };
         var result = await userManager.CreateAsync(user, userDetails.Password);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        if (!result.Succeeded) {
+            TempData["ErrorMessage"] = "Hata! Kullanıcı oluşturulamadı";
+            return RedirectToAction("Register");
+        }
 
-        return RedirectToAction("Details", user.Id);
+        return RedirectToAction("Details");
     }
 
+    //Update
     [Authorize]
-    public async Task<ActionResult> Edit(GymUserAccount user) {
-        var currentUser = await userManager.GetUserAsync(User);
+    public async Task<ActionResult> Edit(UserDetails userDetails) {
+        if (!ModelState.IsValid) {
+            TempData["ErrorMessage"] = "Hata! Kullanıcı ayarları değiştirilemedi";
+            return RedirectToAction("Details");
+        }
 
-        if (currentUser == null)
-            return Unauthorized();
+        var user = (await userManager.GetUserAsync(User))!;
+        user.Email = userDetails.Email;
 
-        if (!await userManager.IsInRoleAsync(currentUser, "Admin") && currentUser.Id != user.Id)
-            return Unauthorized();
 
         var result = await userManager.UpdateAsync(user);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        if (!result.Succeeded) {
+            TempData["ErrorMessage"] = "Hata! Kullanıcı ayarları değiştirilemedi";
+            return RedirectToAction("Details", user.Id);
+        }
 
         return RedirectToAction("Details", user.Id);
     }
 
     [Authorize]
-    public async Task<ActionResult> Delete(string id) {
+    public async Task<ActionResult> Delete() {
         var currentUser = await userManager.GetUserAsync(User);
 
         if (currentUser == null)
             return Unauthorized();
 
-        if (!await userManager.IsInRoleAsync(currentUser, "Admin") && currentUser.Id != id)
-            return Unauthorized();
+        var result = await userManager.DeleteAsync(currentUser!);
 
-        var targetUser = await userManager.FindByIdAsync(id);
+        if (!result.Succeeded) {
+            TempData["ErrorMessage"] = "Hata! Kullanıcı silinemedi";
+            return RedirectToAction("Details", currentUser.Id);
+        }
 
-        if (targetUser == null)
-            return Unauthorized();
-
-        var result = await userManager.DeleteAsync(targetUser);
-
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
-
-        return RedirectToAction("Login");
+        return RedirectToAction("Index", "Home");
     }
 }
