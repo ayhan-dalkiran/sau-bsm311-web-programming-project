@@ -4,7 +4,6 @@ using GymWebsite.Models.Staff;
 using GymWebsite.Models.Business; // BU SATIR EKLENDİ (Hata Çözümü)
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using GymWebsite.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -65,17 +64,15 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
         return RedirectToAction(nameof(Gym));
     }
 
+
+
+
+
+
     // ==========================================
     // ÜYE YÖNETİMİ (USERS)
     // ==========================================
     public ActionResult Users() {
-        var userList = new List<UserIdentityAccount>
-        {
-            new UserIdentityAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
-            new UserIdentityAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
-            new UserIdentityAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
-        };
-
         return View(context.Users.ToList());
     }
 
