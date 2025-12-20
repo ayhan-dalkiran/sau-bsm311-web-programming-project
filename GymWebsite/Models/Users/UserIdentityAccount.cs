@@ -8,11 +8,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Users;
 
-public class GymUserAccount : IdentityUser {
+public class UserIdentityAccount : IdentityUser {
     [Unicode]
     [MaxLength(100)]
     public string FirstName { get; set; } = string.Empty;
-
     [Unicode]
     [MaxLength(100)]
     public string LastName { get; set; } = string.Empty;

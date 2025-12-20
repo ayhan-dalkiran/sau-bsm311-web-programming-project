@@ -2,8 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GymWebsite.Models.Dto;
+namespace GymWebsite.Models.Users;
 
+[NotMapped]
 public class UserDetails {
     [Required(ErrorMessage = "Kullanıcı alanı zorunludur.")]
     [MaxLength(20, ErrorMessage = "Kullanıcı adı 20 karakterden fazla olamaz.")]

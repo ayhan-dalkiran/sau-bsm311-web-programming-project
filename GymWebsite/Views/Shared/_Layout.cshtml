@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Identity.SignInManager<UserIdentityAccount> signInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<UserIdentityAccount> userManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -39,21 +42,29 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-primary fw-bold" asp-controller="AI" asp-action="Index">AI Asistanı ✨</a>
+                            <a class="nav-link text-primary fw-bold" asp-controller="AiManager" asp-action="Index">AI Asistanı ✨</a>
                         </li>
 
  
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item ms-auto">
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="Index">Merhaba, @userManager.GetUserAsync(User).Result!.UserName</a>
+                            </li>
+                            <li class="nav-item ms-2">
+                                <a class="btn btn-outline-dark fw-bold" asp-controller="User" asp-action="Logout">Çıkış Yap</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item ms-auto">
+                                <a class="btn btn-outline-primary fw-bold" asp-controller="User" asp-action="Register">Kayıt Ol</a>
+                            </li>
 
-                        <li class="nav-item ms-auto">
-                            <a class="btn btn-outline-primary fw-bold" asp-controller="User" asp-action="Register">Kayıt Ol</a>
-                        </li>
-
-                        <li class="nav-item me-2">
-                            <a class="btn btn-outline-dark fw-bold" asp-controller="User" asp-action="Login">
-                                Giriş Yap
-                            </a>
-                        </li>
-
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-dark fw-bold" asp-controller="User" asp-action="Login">Giriş Yap</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

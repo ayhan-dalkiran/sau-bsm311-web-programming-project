@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymWebsite.Data; 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext(options) {
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<UserIdentityAccount>(options) {
     public DbSet<Gym> Gyms { get; set; }
     public DbSet<GymService> GymServices { get; set; }
     public DbSet<GymOpenDayTimeSpan> GymOpenDayTimeSpans { get; set; }

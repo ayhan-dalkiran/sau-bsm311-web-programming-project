@@ -1,4 +1,4 @@
-﻿namespace GymWebsite.Models.Dto;
+﻿namespace GymWebsite.Models.Users;
 
 public class UserLogin {
     public string Username { get; set; } = string.Empty;

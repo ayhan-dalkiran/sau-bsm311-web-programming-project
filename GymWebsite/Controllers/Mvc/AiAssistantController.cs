@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 
 namespace GymWebsite.Controllers.Mvc
 {
-    public class AIController : Controller
+    public class AiAssistantController : Controller
     {
         public IActionResult Index()
         {
