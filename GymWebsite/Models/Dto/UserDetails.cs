@@ -5,6 +5,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GymWebsite.Models.Dto;
 
 public class UserDetails {
+    [Required(ErrorMessage = "Kullanıcı alanı zorunludur.")]
+    [MaxLength(20, ErrorMessage = "Kullanıcı adı 20 karakterden fazla olamaz.")]
+    [Display(Name = "Kullanıcı Adı")]
+    public string UserName { get; set; } = string.Empty;
+    
     [Unicode]
     [Required(ErrorMessage = "Ad alanı zorunludur.")]
     [MaxLength(100, ErrorMessage = "Üye adı 100 karakterden fazla olamaz.")]

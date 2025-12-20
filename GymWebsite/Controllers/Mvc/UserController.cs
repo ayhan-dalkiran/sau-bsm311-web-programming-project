@@ -18,16 +18,10 @@ public class UserController(ApplicationDbContext context, UserManager<GymUserAcc
     }
 
     public async Task<ActionResult> Login(UserLogin userLogin) {
-        var result = await signInManager.PasswordSignInAsync(
-            userLogin.Username,
-            userLogin.Password,
-            isPersistent: userLogin.Persistent,
-            lockoutOnFailure: false);
+        var currentUser = await userManager.GetUserAsync(User);
 
-        if (!result.Succeeded)
-            return Unauthorized();
-
-        var user = await userManager.FindByNameAsync(userLogin.Username);
+        if (currentUser is null)
+            return View();
 
         return RedirectToAction("Index");
     }
@@ -60,8 +54,25 @@ public class UserController(ApplicationDbContext context, UserManager<GymUserAcc
         return View();
     }
 
-    public async Task<ActionResult> Create(GymUserAccount user, string password) {
-        var result = await userManager.CreateAsync(user, password);
+    public async Task<ActionResult> Authenticate(UserLogin userLogin) {
+        var result = await signInManager.PasswordSignInAsync(userLogin.Username, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+            return Unauthorized();
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<ActionResult> Create(UserDetails userDetails) {
+        var user = new GymUserAccount {
+            UserName = userDetails.UserName,
+            Email = userDetails.Email,
+            FirstName = userDetails.FirstName,
+            LastName = userDetails.LastName,
+            PhoneNumber = userDetails.PhoneNumber,
+            RegistrationDateTime = DateTime.UtcNow
+        };
+        var result = await userManager.CreateAsync(user, userDetails.Password);
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
