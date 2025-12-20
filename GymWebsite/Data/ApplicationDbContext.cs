@@ -12,7 +12,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<GymService> GymServices { get; set; }
     public DbSet<GymOpenDayTimeSpan> GymOpenDayTimeSpans { get; set; }
 
-    public DbSet<GymMember> GymMembers { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Specialty> Specialties { get; set; }
     public DbSet<Trainer> Trainers { get; set; }

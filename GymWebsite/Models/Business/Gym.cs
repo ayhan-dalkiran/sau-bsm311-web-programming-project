@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Business;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Gym {
     [Key]
     [HiddenInput]
@@ -26,6 +27,12 @@ public class Gym {
     [Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz.")]
     [Display(Name = "Telefon")]
     public string? PhoneNumber { get; set; }
+
+    [Required(ErrorMessage = "E-posta alanı zorunludur.")]
+    [MaxLength(320, ErrorMessage = "E-posta 320 karakterden fazla olamaz.")]
+    [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
+    [Display(Name = "E-posta")]
+    public string? Email { get; set; } = string.Empty;
 
     public ICollection<GymOpenDayTimeSpan> OpenDayTimeSpans { get; set; } = [];
 
