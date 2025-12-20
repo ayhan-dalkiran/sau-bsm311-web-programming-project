@@ -185,6 +185,20 @@ public class AdminPanelController : Controller {
         return RedirectToAction(nameof(Appointments));
     }
 
+    // YARDIMCI METOT: Salonun sunduğu hizmetleri getirir
+    // İleride burası: _context.GymServices.Where(x => x.GymId == 1).ToList(); olacak.
+    private List<string> GetGymServices() {
+        return new List<string>
+        {
+            "Bireysel Antrenman (PT)",
+            "Online Uzaktan Eğitim",
+            "Grup Pilates Dersi",
+            "Beslenme Danışmanlığı",
+            "Yarışma Hazırlık Koçluğu",
+            "Fizik Tedavi & Rehabilitasyon",
+            "Kick Boks Özel Ders"
+        };
+    }
 
     // GET: AdminPanelController/Details/5
     public ActionResult Details(int id) {
@@ -193,23 +207,31 @@ public class AdminPanelController : Controller {
 
     // GET: AdminPanelController/Create
     public ActionResult Create() {
+        // View'a hizmet listesini gönderiyoruz
+        ViewBag.Services = GetGymServices();
         return View();
     }
 
     // POST: AdminPanelController/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Create(Trainer trainer, IFormFile ImageFile) {
+    // Parametreye 'List<string> SelectedServices' eklendi
+    public ActionResult Create(Trainer trainer, IFormFile ImageFile, List<string> SelectedServices) {
         try {
-            return RedirectToAction(nameof(Index));
+            // Backend Notu: Burada gelen SelectedServices listesi, Trainer.Services tablosuna kaydedilecek.
+            return RedirectToAction(nameof(Trainers)); // Index yerine Trainers'a dönmesi daha mantıklı
         }
         catch {
+            ViewBag.Services = GetGymServices(); // Hata olursa listeyi tekrar doldur
             return View();
         }
     }
 
     // GET: AdminPanelController/Edit/5
     public ActionResult Edit(int id) {
+        // Hizmetleri View'a taşı
+        ViewBag.Services = GetGymServices();
+
         var fakeTrainer = new Trainer {
             Id = id,
             FirstName = "Test",
@@ -225,9 +247,11 @@ public class AdminPanelController : Controller {
     [ValidateAntiForgeryToken]
     public ActionResult Edit(int id, IFormCollection collection) {
         try {
-            return RedirectToAction(nameof(Index));
+            // Backend Notu: Gelen SelectedServices ile veritabanını güncelle.
+            return RedirectToAction(nameof(Trainers));
         }
         catch {
+            ViewBag.Services = GetGymServices();
             return View();
         }
     }

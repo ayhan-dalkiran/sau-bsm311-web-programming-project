@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold text-dark">Antrenör Düzenle</h3>
-            <p class="text-muted mb-0">Eğitmen bilgilerini ve uzmanlık alanlarını güncelleyin.</p>
+            <p class="text-muted mb-0">Mevcut eğitmen bilgilerini ve hizmetlerini güncelleyin.</p>
         </div>
         <a href="/AdminPanel/Trainers" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i> Listeye Dön
@@ -30,13 +30,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold text-muted small">AD</label>
-                                <input asp-for="FirstName" class="form-control" />
+                                <input asp-for="FirstName" class="form-control form-control-lg" />
                                 <span asp-validation-for="FirstName" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold text-muted small">SOYAD</label>
-                                <input asp-for="LastName" class="form-control" />
+                                <input asp-for="LastName" class="form-control form-control-lg" />
                                 <span asp-validation-for="LastName" class="text-danger small"></span>
                             </div>
                         </div>
@@ -44,7 +44,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold text-muted small">UZMANLIK ALANLARI</label>
                             <div class="alert alert-light border small py-2">
-                                <i class="bi bi-info-circle me-1"></i> Çoklu seçim için CTRL tuşuna basılı tutarak tıklayın.
+                                <i class="bi bi-info-circle me-1"></i> Şu anki uzmanlıklar seçili gelecektir. (Değiştirmek için CTRL ile seçin)
                             </div>
                             <select name="SelectedSpecialtyIds" class="form-select" multiple size="4">
                                 <option value="1">Fitness & Vücut Geliştirme</option>
@@ -56,41 +56,66 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-muted small">BİYOGRAFİ</label>
+                            <label class="form-label fw-bold text-muted small">HİZMET YETKİLERİ</label>
+                            <div class="card p-3 bg-light border-0">
+                                <div class="row">
+                                    @if (ViewBag.Services != null)
+                                    {
+                                        var services = ViewBag.Services as List<string>;
+                                        if (services != null)
+                                        {
+                                            foreach (var service in services)
+                                            {
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch mb-2">
+                                                        <input class="form-check-input" type="checkbox" name="SelectedServices" value="@service" id="edit_srv_@service.GetHashCode()">
+                                                        <label class="form-check-label" for="edit_srv_@service.GetHashCode()">
+                                                            @service
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-muted small">Hizmet listesi yüklenemedi.</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-text text-muted small mt-1">
+                                <i class="bi bi-info-circle"></i> İşaretlediğiniz hizmetler antrenörün profilinde aktif edilecektir.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">BİYOGRAFİ / HAKKINDA</label>
                             <textarea asp-for="Bio" class="form-control" rows="5"></textarea>
                             <span asp-validation-for="Bio" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-4 p-3 bg-light rounded border border-dashed d-flex align-items-center">
                             <div class="me-3">
-                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                                    <i class="bi bi-person-fill fs-3"></i>
+                                <div class="bg-white p-1 rounded shadow-sm border">
+                                    <img src="https://ui-avatars.com/api/?name=@(Model.FirstName)+@(Model.LastName)&background=random" class="rounded" width="60" height="60" alt="Mevcut Foto">
                                 </div>
                             </div>
                             <div class="flex-grow-1">
                                 <label class="form-label fw-bold mb-1">Fotoğrafı Değiştir</label>
                                 <input type="file" name="ImageFile" class="form-control form-control-sm" />
-                                <div class="form-text text-muted small">Yeni dosya seçerseniz eskisi silinir.</div>
+                                <div class="form-text text-muted small">Yeni dosya seçerseniz eskisi silinir (JPG/PNG).</div>
                             </div>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-warning fw-bold text-dark py-2">
-                                <i class="bi bi-pencil-square me-2"></i> DEĞİŞİKLİKLERİ KAYDET
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/AdminPanel/Trainers" class="btn btn-light border px-4">İptal</a>
+                            <button type="submit" class="btn btn-warning fw-bold text-dark px-5">
+                                <i class="bi bi-pencil-square me-2"></i> GÜNCELLE
                             </button>
                         </div>
 
                     </form>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="alert alert-info border-0 shadow-sm">
-                <h6 class="fw-bold"><i class="bi bi-lightbulb-fill me-2"></i>İpucu</h6>
-                <p class="small mb-0">
-                    Antrenörün çalışma saatlerini "Detay" sayfasından veya ayrı bir takvim modülünden düzenleyebilirsiniz. Bu sayfa sadece profil bilgilerini içerir.
-                </p>
             </div>
         </div>
     </div>
