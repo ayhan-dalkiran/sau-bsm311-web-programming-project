@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using GymWebsite.Data;
-using GymWebsite.Models.Business;
 using Microsoft.AspNetCore.Identity;
 
 namespace GymWebsite.Controllers.Mvc;
@@ -17,47 +16,7 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
     public ActionResult Index() => View();
 
     public ActionResult Gym() {
-        var gym = context.Gyms.First();
-
-        // Test için sahte bir salon verisi
-        var fakeGym = new GymWebsite.Models.Business.Gym {
-            Id = 1,
-            Name = "Power Gym Center",
-            Address = "Atatürk Mah. Cumhuriyet Cad. No:123, İstanbul",
-            PhoneNumber = "0212 123 45 67",
-            Email = "iletisim@powergym.com",
-            Services = new List<GymService>() // Listeyi başlatıyoruz ama boş
-        };
-
-        // 2. Adım: Şimdi Hizmetleri oluşturup, 'Gym' özelliğine yukarıdaki 'fakeGym'i atıyoruz.
-        // Bu sayede "Gerekli 'Gym' üyesi ayarlanmalı" hatası çözülür.
-        fakeGym.Services = new List<GymService>
-        {
-            new GymService {
-                Id = 101,
-                Name = "Standart Fitness Üyeliği",
-                Price = 1500.00m,
-                DurationInMinutes = 0,
-                Description = "1 Aylık sınırsız salon kullanımı.",
-                Gym = fakeGym // <-- KİLİT NOKTA BURASI
-            },
-            new GymService {
-                Id = 102,
-                Name = "Reformer Pilates (Tek Ders)",
-                Price = 450.00m,
-                DurationInMinutes = 50,
-                Description = "Eğitmen eşliğinde birebir ders.",
-                Gym = fakeGym // <-- KİLİT NOKTA BURASI
-            },
-            new GymService {
-                Id = 103,
-                Name = "Kick Boks Özel Ders",
-                Price = 600.00m,
-                DurationInMinutes = 60,
-                Description = "Bireysel antrenman ve teknik geliştirme.",
-                Gym = fakeGym // <-- KİLİT NOKTA BURASI
-            }
-        };
+        var gym = context.Gyms.Include(gym => gym.Services).First();
 
         return View(gym);
     }
@@ -86,7 +45,10 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult AddGymService(GymService model) {
+        var gym = context.Gyms.First();
         // Not: Gerçekte burada _context.GymServices.Add(model) çalışacak.
+        gym.Services.Add(model);
+        context.SaveChanges();
 
         TempData["SuccessMessage"] = $"'{model.Name}' hizmeti başarıyla sisteme eklendi.";
         return RedirectToAction(nameof(Gym));
@@ -95,6 +57,10 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
     // YENİ: Hizmet Silme İşlemi
     public ActionResult DeleteGymService(int id) {
         // Not: Gerçekte burada _context.GymServices.Remove(...) çalışacak.
+        var gymService = context.GymServices.Find(id);
+        context.GymServices.Remove(gymService!);
+        context.SaveChanges();
+
         TempData["ErrorMessage"] = "Hizmet kaydı silindi.";
         return RedirectToAction(nameof(Gym));
     }
@@ -174,7 +140,9 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
     // ==========================================
     // ANTRENÖR YÖNETİMİ (TRAINERS)
     // ==========================================
-    public ActionResult Trainers() => View();
+    public ActionResult Trainers() {
+        return View(context.Trainers.ToList());
+    }
 
     // Antrenör Ekleme Sayfası (GET)
     public ActionResult Create() {

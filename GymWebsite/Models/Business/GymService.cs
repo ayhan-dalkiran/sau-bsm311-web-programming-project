@@ -10,13 +10,13 @@ public class GymService {
     [HiddenInput]
     public int Id { get; set; }
 
-    public required Gym Gym { get; set; }
+    public Gym Gym { get; set; }
 
     [Unicode]
     [Required(ErrorMessage = "Hizmet adı boş olamaz.")]
     [MaxLength(100, ErrorMessage = "Hizmet adı 100 karakterden fazla olamaz.")]
     [Display(Name = "Hizmet Adı")]
-    public required string Name { get; set; } // Örn: Pilates Seansı, Fitness Üyeliği
+    public string Name { get; set; } = string.Empty; // Örn: Pilates Seansı, Fitness Üyeliği
 
     [Unicode]
     [MaxLength(4000, ErrorMessage = "Hizmet açıklaması 4000 karakterden fazla olamaz.")]
