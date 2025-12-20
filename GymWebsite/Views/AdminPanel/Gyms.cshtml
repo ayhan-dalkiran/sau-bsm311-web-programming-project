@@ -1,39 +1,93 @@
-﻿@{
+﻿@model GymWebsite.Models.Business.Gym
+
+@{
     ViewData["Title"] = "Salon Bilgileri";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0 fw-bold">Salon Bilgilerini Düzenle</h5>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold text-dark">Salon Bilgileri</h3>
+                    <p class="text-muted mb-0">Spor salonunun genel bilgilerini buradan yönetebilirsiniz.</p>
+                </div>
             </div>
-            <div class="card-body p-4">
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Salon Adı</label>
-                        <input type="text" class="form-control" value="Power Gym Center">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Adres</label>
-                        <textarea class="form-control" rows="3">Atatürk Caddesi, No: 123 Merkez / İstanbul</textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Telefon</label>
-                            <input type="text" class="form-control" value="0212 555 55 55">
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-building me-2"></i> Salon Ayarları</h5>
+                </div>
+                <div class="card-body p-4">
+
+                    <form asp-controller="AdminPanel" asp-action="UpdateGym" method="post">
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">SALON ADI</label>
+                            <input asp-for="Name" class="form-control form-control-lg" placeholder="Örn: Power Gym Center" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">E-posta</label>
-                            <input type="email" class="form-control" value="info@powergym.com">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">ADRES</label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgisi..."></textarea>
+                            <span asp-validation-for="Address" class="text-danger small"></span>
                         </div>
-                    </div>
-                    <button class="btn btn-primary float-end">
-                        <i class="bi bi-save me-2"></i> Değişiklikleri Kaydet
-                    </button>
-                </form>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-muted small">TELEFON</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="0212 555 55 55" />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-bold text-muted small">E-POSTA</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Email" class="form-control" placeholder="info@powergym.com" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-light border small">
+                            <i class="bi bi-clock me-2"></i> Çalışma saatlerini düzenlemek için <a href="#" class="fw-bold text-decoration-none">Çalışma Takvimi</a> sayfasını kullanın.
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary fw-bold py-2 shadow-sm">
+                                <i class="bi bi-save2-fill me-2"></i> DEĞİŞİKLİKLERİ KAYDET
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,103 @@
+﻿@model GymWebsite.Models.Staff.Trainer
+
+@{
+    ViewData["Title"] = "Antrenör Düzenle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark">Antrenör Düzenle</h3>
+            <p class="text-muted mb-0">Eğitmen bilgilerini ve uzmanlık alanlarını güncelleyin.</p>
+        </div>
+        <a href="/AdminPanel/Trainers" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <form asp-controller="AdminPanel" asp-action="Edit" method="post" enctype="multipart/form-data">
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-muted small">AD</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-muted small">SOYAD</label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted small">UZMANLIK ALANLARI</label>
+                            <div class="alert alert-light border small py-2">
+                                <i class="bi bi-info-circle me-1"></i> Çoklu seçim için CTRL tuşuna basılı tutarak tıklayın.
+                            </div>
+                            <select name="SelectedSpecialtyIds" class="form-select" multiple size="4">
+                                <option value="1">Fitness & Vücut Geliştirme</option>
+                                <option value="2">Pilates</option>
+                                <option value="3">Yoga</option>
+                                <option value="4">Kardiyo / Kondisyon</option>
+                                <option value="5">Boks / Kick Boks</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">BİYOGRAFİ</label>
+                            <textarea asp-for="Bio" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Bio" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-light rounded border border-dashed d-flex align-items-center">
+                            <div class="me-3">
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person-fill fs-3"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="form-label fw-bold mb-1">Fotoğrafı Değiştir</label>
+                                <input type="file" name="ImageFile" class="form-control form-control-sm" />
+                                <div class="form-text text-muted small">Yeni dosya seçerseniz eskisi silinir.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning fw-bold text-dark py-2">
+                                <i class="bi bi-pencil-square me-2"></i> DEĞİŞİKLİKLERİ KAYDET
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="alert alert-info border-0 shadow-sm">
+                <h6 class="fw-bold"><i class="bi bi-lightbulb-fill me-2"></i>İpucu</h6>
+                <p class="small mb-0">
+                    Antrenörün çalışma saatlerini "Detay" sayfasından veya ayrı bir takvim modülünden düzenleyebilirsiniz. Bu sayfa sadece profil bilgilerini içerir.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

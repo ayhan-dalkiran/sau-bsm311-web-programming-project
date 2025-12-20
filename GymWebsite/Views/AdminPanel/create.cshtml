@@ -1,0 +1,88 @@
+﻿@model GymWebsite.Models.Staff.Trainer
+
+@{
+    ViewData["Title"] = "Yeni Antrenör Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark">Yeni Antrenör Ekle</h3>
+            <p class="text-muted mb-0">Eğitmen kadrosuna yeni bir isim ekleyin.</p>
+        </div>
+        <a href="/AdminPanel/Trainers" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Listeye Dön
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <form asp-controller="AdminPanel" asp-action="Create" method="post" enctype="multipart/form-data">
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-muted small">AD</label>
+                                <input asp-for="FirstName" class="form-control form-control-lg" placeholder="Örn: Ahmet" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold text-muted small">SOYAD</label>
+                                <input asp-for="LastName" class="form-control form-control-lg" placeholder="Örn: Yılmaz" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-muted small">UZMANLIK ALANLARI</label>
+                            <div class="alert alert-light border small">
+                                <i class="bi bi-info-circle me-1"></i> Birden fazla seçim yapabilirsiniz. (CTRL tuşuna basılı tutarak)
+                            </div>
+                            <select name="SelectedSpecialtyIds" class="form-select" multiple size="4">
+                                <option value="1">Fitness & Vücut Geliştirme</option>
+                                <option value="2">Pilates</option>
+                                <option value="3">Yoga</option>
+                                <option value="4">Kardiyo / Kondisyon</option>
+                                <option value="5">Boks / Kick Boks</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-muted small">BİYOGRAFİ / HAKKINDA</label>
+                            <textarea asp-for="Bio" class="form-control" rows="5" placeholder="Antrenörün deneyimleri ve geçmişi..."></textarea>
+                            <span asp-validation-for="Bio" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4 p-3 bg-light rounded border border-dashed text-center">
+                            <i class="bi bi-cloud-arrow-up fs-2 text-primary"></i>
+                            <div class="mt-2">
+                                <label class="form-label fw-bold mb-1">Profil Fotoğrafı Yükle</label>
+                                <p class="small text-muted">JPG veya PNG.</p>
+                                <input type="file" name="ImageFile" class="form-control w-50 mx-auto" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="bi bi-check-circle-fill me-2"></i> KAYDET
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

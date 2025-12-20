@@ -1,0 +1,42 @@
+﻿@model GymWebsite.Models.Staff.Trainer
+
+@{
+    ViewData["Title"] = "Antrenörü Sil";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 60vh;">
+
+    <div class="card border-0 shadow-lg text-center" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i> Silme Onayı</h5>
+        </div>
+
+        <div class="card-body p-5">
+            <div class="mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-trash3-fill fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark">Emin misiniz?</h4>
+                <p class="text-muted">
+                    <strong class="text-dark">@Model?.FirstName @Model?.LastName</strong> isimli antrenörü silmek üzeresiniz.
+                    Bu işlem geri alınamaz ve antrenöre ait randevu verileri etkilenebilir.
+                </p>
+            </div>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                        EVET, SİL
+                    </button>
+                    <a href="/AdminPanel/Trainers" class="btn btn-light btn-lg border">
+                        Hayır, Vazgeç
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
