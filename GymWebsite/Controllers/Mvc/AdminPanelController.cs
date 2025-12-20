@@ -1,7 +1,9 @@
-﻿using GymWebsite.Models.Staff;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using GymWebsite.Models;           
+using GymWebsite.Models.Users;     
+using GymWebsite.Models.Staff;     
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;  
 
 namespace GymWebsite.Controllers.Mvc;
 
@@ -108,7 +110,93 @@ public class AdminPanelController : Controller {
 
     public ActionResult Trainers() => View();
 
-    public ActionResult Appointments() => View();
+    public ActionResult Appointments() {
+        // Test için sahte bir randevu listesi oluşturuyoruz.
+        // Modelindeki "required" alanları doldurmak zorundayız.
+        var appointments = new List<Appointment>
+        {
+            new Appointment
+            {
+                Id = 1,
+                Date = DateTime.Now.AddDays(1).AddHours(14), // Yarın 14:00
+                DurationInMinutes = 60,
+                Price = 500.00m,
+                Status = AppointmentStatus.Pending, // Bekliyor
+                
+                // Modelinde isim "GymMember" olduğu için burası önemli!
+                GymMember = new GymUserAccount
+                {
+                    FirstName = "Ahmet",
+                    LastName = "Yılmaz",
+                    Email = "ahmet@mail.com"
+                },
+                Trainer = new Trainer
+                {
+                    FirstName = "Ali",
+                    LastName = "Veli"
+                }
+            },
+            new Appointment
+            {
+                Id = 2,
+                Date = DateTime.Now.AddHours(2), // Bugün 2 saat sonra
+                DurationInMinutes = 45,
+                Price = 350.50m,
+                Status = AppointmentStatus.Confirmed, // Onaylandı
+                
+                GymMember = new GymUserAccount
+                {
+                    FirstName = "Zeynep",
+                    LastName = "Demir",
+                    Email = "zeynep@mail.com"
+                },
+                Trainer = new Trainer
+                {
+                    FirstName = "Ayşe",
+                    LastName = "Yılmaz"
+                }
+            }
+        };
+
+        return View(appointments);
+    }
+
+    // 1. Randevu Onaylama (Yeşil Tık)
+    public ActionResult ApproveAppointment(int id) {
+        // Backend Kodu: var app = _context.Appointments.Find(id); app.Status = AppointmentStatus.Confirmed; _context.SaveChanges();
+
+        TempData["SuccessMessage"] = $"{id} numaralı randevu ONAYLANDI ve üyeye bildirim gönderildi.";
+        return RedirectToAction(nameof(Appointments));
+    }
+
+    // 2. Randevu İptal Etme (Kırmızı Çarpı)
+    public ActionResult CancelAppointment(int id) {
+        // Backend Kodu: var app = _context.Appointments.Find(id); app.Status = AppointmentStatus.Cancelled; _context.SaveChanges();
+
+        TempData["ErrorMessage"] = $"{id} numaralı randevu İPTAL EDİLDİ.";
+        return RedirectToAction(nameof(Appointments));
+    }
+
+    // 3. Randevu Silme Ekranı (GET) - Veritabanından tamamen silmek için
+    public ActionResult DeleteAppointment(int id) {
+        // Silme onayı için sahte veri
+        var fakeApp = new GymWebsite.Models.Appointment {
+            Id = id,
+            Date = DateTime.Now,
+            GymMember = new GymWebsite.Models.Users.GymUserAccount { FirstName = "Silinecek", LastName = "Randevu" },
+            Trainer = new GymWebsite.Models.Staff.Trainer { FirstName = "Örnek", LastName = "Hoca" }
+        };
+        return View(fakeApp);
+    }
+
+    // 4. Randevu Silme İşlemi (POST)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public ActionResult DeleteAppointment(GymWebsite.Models.Appointment model) {
+        TempData["ErrorMessage"] = "Randevu kaydı veritabanından kalıcı olarak silindi.";
+        return RedirectToAction(nameof(Appointments));
+    }
+
 
     // GET: AdminPanelController/Details/5
     public ActionResult Details(int id)
@@ -194,6 +282,8 @@ public class AdminPanelController : Controller {
             return View();
         }
     }
+
+
 
     
 }
