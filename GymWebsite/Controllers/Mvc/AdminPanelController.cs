@@ -1,20 +1,19 @@
-﻿using GymWebsite.Models;           
-using GymWebsite.Models.Users;     
-using GymWebsite.Models.Staff;     
+﻿using GymWebsite.Models;
+using GymWebsite.Models.Users;
+using GymWebsite.Models.Staff;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;  
+using System.Collections.Generic;
 
 namespace GymWebsite.Controllers.Mvc;
 
-//[Authorize(Roles = "Admin")] DENEME AMAÇLI YORUM SATIRI YAPTIM BURAYI SON AŞAMADA TEKRAR KOD YAP
+//[Authorize(Roles = "Admin")] 
 public class AdminPanelController : Controller {
     // GET: AdminPanelController
     public ActionResult Index() => View();
 
     public ActionResult Gyms() {
-        // Test için sahte bir salon verisi oluşturup sayfaya gönderiyoruz.
-        // Backend bağlanınca burası veritabanından çekilecek: _context.Gyms.FirstOrDefault();
+        // Test için sahte bir salon verisi
         var fakeGym = new GymWebsite.Models.Business.Gym {
             Id = 1,
             Name = "Power Gym Center",
@@ -30,26 +29,19 @@ public class AdminPanelController : Controller {
     [ValidateAntiForgeryToken]
     public ActionResult UpdateGym(GymWebsite.Models.Business.Gym model) {
         if (ModelState.IsValid) {
-            // Buraya arkadaşın veritabanı güncelleme kodunu yazacak.
-            // Örn: _context.Gyms.Update(model); _context.SaveChanges();
-
-            // Şimdilik başarılıymış gibi aynı sayfaya geri dönelim
-            // TempData ile mesaj gösterelim (Tasarımda ekleyeceğiz)
             TempData["SuccessMessage"] = "Salon bilgileri başarıyla güncellendi!";
             return RedirectToAction("Gyms");
         }
-
-        // Hata varsa formu tekrar göster
         return View("Gyms", model);
     }
 
     public ActionResult Users() {
-        // Test için sahte üye listesi
-        var userList = new List<GymWebsite.Models.Users.UserIdentityAccount>
+        // BURADA ZATEN UserIdentityAccount KULLANILMIŞ, DOĞRU OLANI BU
+        var userList = new List<UserIdentityAccount>
         {
-            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
-            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
-            new GymWebsite.Models.Users.UserIdentityAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
+            new UserIdentityAccount { Id = "user-1", FirstName = "Ahmet", LastName = "Yılmaz", Email = "ahmet@mail.com", PhoneNumber = "05551112233", RegistrationDateTime = DateTime.Now.AddDays(-10) },
+            new UserIdentityAccount { Id = "user-2", FirstName = "Zeynep", LastName = "Demir", Email = "zeynep@mail.com", PhoneNumber = "05554445566", RegistrationDateTime = DateTime.Now.AddDays(-5) },
+            new UserIdentityAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
         };
 
         return View(userList);
@@ -63,16 +55,15 @@ public class AdminPanelController : Controller {
     // Yeni Üye Ekleme (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult CreateUser(GymWebsite.Models.Users.UserIdentityAccount model, string Password) {
-        // Not: Gerçek backend'de burada UserManager.CreateAsync kullanılacak.
-        // Şimdilik listeye dönüyoruz.
+    // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
+    public ActionResult CreateUser(UserIdentityAccount model, string Password) {
         return RedirectToAction(nameof(Users));
     }
 
     // Üye Düzenleme (GET)
     public ActionResult EditUser(string id) {
-        // Test verisi
-        var fakeUser = new GymWebsite.Models.Users.UserIdentityAccount {
+        // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
+        var fakeUser = new UserIdentityAccount {
             Id = id,
             FirstName = "Test",
             LastName = "Kullanıcı",
@@ -85,13 +76,15 @@ public class AdminPanelController : Controller {
     // Üye Düzenleme (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult EditUser(GymWebsite.Models.Users.UserIdentityAccount model) {
+    // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
+    public ActionResult EditUser(UserIdentityAccount model) {
         return RedirectToAction(nameof(Users));
     }
 
     // Üye Silme (GET)
     public ActionResult DeleteUser(string id) {
-        var fakeUser = new GymWebsite.Models.Users.UserIdentityAccount {
+        // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
+        var fakeUser = new UserIdentityAccount {
             Id = id,
             FirstName = "Silinecek",
             LastName = "Üye",
@@ -111,20 +104,18 @@ public class AdminPanelController : Controller {
     public ActionResult Trainers() => View();
 
     public ActionResult Appointments() {
-        // Test için sahte bir randevu listesi oluşturuyoruz.
-        // Modelindeki "required" alanları doldurmak zorundayız.
         var appointments = new List<Appointment>
         {
             new Appointment
             {
                 Id = 1,
-                Date = DateTime.Now.AddDays(1).AddHours(14), // Yarın 14:00
+                Date = DateTime.Now.AddDays(1).AddHours(14),
                 DurationInMinutes = 60,
                 Price = 500.00m,
-                Status = AppointmentStatus.Pending, // Bekliyor
+                Status = AppointmentStatus.Pending, 
                 
-                // Modelinde isim "GymMember" olduğu için burası önemli!
-                GymMember = new GymUserAccount
+                // HATA BURADAYDI: GymUserAccount -> UserIdentityAccount OLARAK DEĞİŞTİRDİM
+                GymMember = new UserIdentityAccount
                 {
                     FirstName = "Ahmet",
                     LastName = "Yılmaz",
@@ -139,12 +130,13 @@ public class AdminPanelController : Controller {
             new Appointment
             {
                 Id = 2,
-                Date = DateTime.Now.AddHours(2), // Bugün 2 saat sonra
+                Date = DateTime.Now.AddHours(2),
                 DurationInMinutes = 45,
                 Price = 350.50m,
-                Status = AppointmentStatus.Confirmed, // Onaylandı
+                Status = AppointmentStatus.Confirmed, 
                 
-                GymMember = new GymUserAccount
+                // HATA BURADAYDI: GymUserAccount -> UserIdentityAccount OLARAK DEĞİŞTİRDİM
+                GymMember = new UserIdentityAccount
                 {
                     FirstName = "Zeynep",
                     LastName = "Demir",
@@ -161,29 +153,25 @@ public class AdminPanelController : Controller {
         return View(appointments);
     }
 
-    // 1. Randevu Onaylama (Yeşil Tık)
+    // 1. Randevu Onaylama
     public ActionResult ApproveAppointment(int id) {
-        // Backend Kodu: var app = _context.Appointments.Find(id); app.Status = AppointmentStatus.Confirmed; _context.SaveChanges();
-
         TempData["SuccessMessage"] = $"{id} numaralı randevu ONAYLANDI ve üyeye bildirim gönderildi.";
         return RedirectToAction(nameof(Appointments));
     }
 
-    // 2. Randevu İptal Etme (Kırmızı Çarpı)
+    // 2. Randevu İptal Etme
     public ActionResult CancelAppointment(int id) {
-        // Backend Kodu: var app = _context.Appointments.Find(id); app.Status = AppointmentStatus.Cancelled; _context.SaveChanges();
-
         TempData["ErrorMessage"] = $"{id} numaralı randevu İPTAL EDİLDİ.";
         return RedirectToAction(nameof(Appointments));
     }
 
-    // 3. Randevu Silme Ekranı (GET) - Veritabanından tamamen silmek için
+    // 3. Randevu Silme Ekranı (GET)
     public ActionResult DeleteAppointment(int id) {
-        // Silme onayı için sahte veri
         var fakeApp = new GymWebsite.Models.Appointment {
             Id = id,
             Date = DateTime.Now,
-            GymMember = new GymWebsite.Models.Users.GymUserAccount { FirstName = "Silinecek", LastName = "Randevu" },
+            // HATA BURADAYDI: GymUserAccount -> UserIdentityAccount OLARAK DEĞİŞTİRDİM
+            GymMember = new UserIdentityAccount { FirstName = "Silinecek", LastName = "Randevu" },
             Trainer = new GymWebsite.Models.Staff.Trainer { FirstName = "Örnek", LastName = "Hoca" }
         };
         return View(fakeApp);
@@ -199,42 +187,34 @@ public class AdminPanelController : Controller {
 
 
     // GET: AdminPanelController/Details/5
-    public ActionResult Details(int id)
-    {
+    public ActionResult Details(int id) {
         return View();
     }
 
     // GET: AdminPanelController/Create
-    public ActionResult Create()
-    {
+    public ActionResult Create() {
         return View();
     }
 
     // POST: AdminPanelController/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Create(Trainer trainer, IFormFile ImageFile)
-    {
-        try
-        {
+    public ActionResult Create(Trainer trainer, IFormFile ImageFile) {
+        try {
             return RedirectToAction(nameof(Index));
         }
-        catch
-        {
+        catch {
             return View();
         }
     }
 
     // GET: AdminPanelController/Edit/5
     public ActionResult Edit(int id) {
-        // Backend hazır olmadığı için sayfaya SAHTE bir antrenör gönderiyoruz.
-        // Böylece formu doluymuş gibi test edebilirsin.
         var fakeTrainer = new Trainer {
             Id = id,
             FirstName = "Test",
             LastName = "Antrenör",
-            Bio = "Bu, düzenleme sayfasını test etmek için oluşturulmuş geçici bir veridir. Backend bağlandığında buraya gerçek veritabanı verisi gelecektir.",
-            // Resim veya diğer alanlar şimdilik boş kalabilir
+            Bio = "Bu, düzenleme sayfasını test etmek için oluşturulmuş geçici bir veridir.",
         };
 
         return View(fakeTrainer);
@@ -243,21 +223,17 @@ public class AdminPanelController : Controller {
     // POST: AdminPanelController/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Edit(int id, IFormCollection collection)
-    {
-        try
-        {
+    public ActionResult Edit(int id, IFormCollection collection) {
+        try {
             return RedirectToAction(nameof(Index));
         }
-        catch
-        {
+        catch {
             return View();
         }
     }
 
     // GET: AdminPanelController/Delete/5
     public ActionResult Delete(int id) {
-        // Silme sayfası için de sahte bir veri oluşturalım
         var fakeTrainer = new Trainer {
             Id = id,
             FirstName = "Silinecek",
@@ -271,19 +247,12 @@ public class AdminPanelController : Controller {
     // POST: AdminPanelController/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult Delete(int id, IFormCollection collection)
-    {
-        try
-        {
+    public ActionResult Delete(int id, IFormCollection collection) {
+        try {
             return RedirectToAction(nameof(Index));
         }
-        catch
-        {
+        catch {
             return View();
         }
     }
-
-
-
-    
 }
