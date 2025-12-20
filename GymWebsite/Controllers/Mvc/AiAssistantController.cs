@@ -4,42 +4,29 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace GymWebsite.Controllers.Mvc
-{
-    public class AiAssistantController : Controller
-    {
-        public IActionResult Index()
-        {
-            return View();
-        }
+namespace GymWebsite.Controllers.Mvc {
+    // [Route("AI/[action]")]  <-- BUNU SİLİYORUZ!
+    public class AiAssistantController : Controller {
+        // View klasörü "Views/AiAssistant" olmalı
+        public IActionResult Index() => View();
 
-        public IActionResult Details(int id)
-        {
-            return View();
-        }
+        public IActionResult Details(int id) => View();
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
+        public IActionResult Edit(int id) => View();
 
         [Authorize(Roles = "Admin")]
-        public IActionResult Delete(int id)
-        {
-            return View();
-        }
+        public IActionResult Delete(int id) => View();
 
         [HttpPost]
-        public async Task<IActionResult> GetAIPlan(int age, int height, int weight, string gender, string goal)
-        {
+        public async Task<IActionResult> GetAIPlan(int age, int height, int weight, string gender, string goal) {
+            // API Key'inizi buraya yapıştırın
             string apiKey = "AIzaSyAFK1iBsO1xN5IQLRWMTw5cmwrMGmGBrdE";
+
+            
             string apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
 
             string userPrompt = $@"
@@ -53,49 +40,20 @@ Görev: HTML formatında (<ul>, <li>, <strong>, <br>) şunları hazırla:
 
 Önemli: Markdown kullanma, sadece HTML etiketleri kullan.";
 
-            var payload = new
-            {
+            var payload = new {
                 contents = new[]
                 {
-                    new
-                    {
-                        parts = new[]
-                        {
-                            new { text = userPrompt }
-                        }
-                    }
+                    new { parts = new[] { new { text = userPrompt } } }
                 }
             };
 
-            string jsonPayload = JsonSerializer.Serialize(payload);
-            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-            using var httpClient = new HttpClient();
-
-            try
-            {
-                var response = await httpClient.PostAsync(apiUrl, content);
-                string responseString = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                    return Json(new { success = false, message = "Hata" });
-
-                var jsonNode = JsonNode.Parse(responseString);
-                string aiResponse = jsonNode?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
-
-                return Json(new { success = true, message = aiResponse ?? "..." });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
+            return await CallGeminiApi(apiUrl, payload);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChatWithCoach(string userMessage, string contextHistory)
-        {
+        public async Task<IActionResult> ChatWithCoach(string userMessage, string contextHistory) {
             string apiKey = "AIzaSyAFK1iBsO1xN5IQLRWMTw5cmwrMGmGBrdE";
-            string apiUrl = $"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={apiKey}";
+            string apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
 
             string fullPrompt = $@"
 Rol: Sen profesyonel bir spor koçusun.
@@ -112,41 +70,36 @@ KURALLAR:
    Normal, samimi cevap ver. HTML kullanma.
 ";
 
-            var payload = new
-            {
+            var payload = new {
                 contents = new[]
                 {
-                    new
-                    {
-                        parts = new[]
-                        {
-                            new { text = fullPrompt }
-                        }
-                    }
+                    new { parts = new[] { new { text = fullPrompt } } }
                 }
             };
 
+            return await CallGeminiApi(apiUrl, payload);
+        }
+
+        private async Task<IActionResult> CallGeminiApi(string apiUrl, object payload) {
+            using var httpClient = new HttpClient();
             string jsonPayload = JsonSerializer.Serialize(payload);
             var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-            using var httpClient = new HttpClient();
-
-            try
-            {
+            try {
                 var response = await httpClient.PostAsync(apiUrl, content);
                 string responseString = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
-                    return Json(new { success = false, message = "Hata" });
+                    return Json(new { success = false, message = "API Hatası: " + response.StatusCode });
 
                 var jsonNode = JsonNode.Parse(responseString);
+                // JSON yapısındaki olası null durumlarına karşı güvenli erişim
                 string aiResponse = jsonNode?["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
 
-                return Json(new { success = true, message = aiResponse ?? "..." });
+                return Json(new { success = true, message = aiResponse ?? "Yanıt alınamadı." });
             }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
+            catch (Exception ex) {
+                return Json(new { success = false, message = "Hata: " + ex.Message });
             }
         }
     }

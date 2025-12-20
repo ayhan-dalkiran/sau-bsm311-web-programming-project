@@ -146,7 +146,7 @@
 
         // Backend'e İstek Gönder
         $.ajax({
-            url: '/AI/GetAIPlan',
+            url: '/AiAssistant/GetAIPlan',
             type: 'POST',
             data: requestData,
             success: function (response) {
@@ -213,7 +213,7 @@
 
         // Backend'e Gönder
         $.ajax({
-            url: '/AI/ChatWithCoach',
+            url: '/AiAssistant/ChatWithCoach',
             type: 'POST',
             data: { userMessage: message, contextHistory: currentContext },
             success: function (response) {

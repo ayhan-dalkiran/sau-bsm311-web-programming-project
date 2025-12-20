@@ -1,129 +1,59 @@
-﻿@{
-    ViewData["Title"] = "Üye Listesi";
+﻿@using GymWebsite.Models.Users
+@model UserIdentityAccount
+
+@{
+    ViewData["Title"] = "Profil Bilgilerim";
 }
 
 <div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-person-circle me-2"></i>Kullanıcı Profili</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label fw-bold text-muted">Ad Soyad:</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-plaintext fs-5">@Model.FirstName @Model.LastName</p>
+                        </div>
+                    </div>
+                    <hr class="text-muted opacity-25">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-primary">Üye Listesi</h2>
-            <p class="text-muted">Toplam 15 kayıtlı üye görüntüleniyor.</p>
-        </div>
-        <a href="#" class="btn btn-success fw-bold shadow-sm">
-            <i class="bi bi-person-plus-fill me-2"></i> Yeni Üye Ekle
-        </a>
-    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label fw-bold text-muted">Kullanıcı Adı / Email:</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-plaintext">@Model.Email</p>
+                        </div>
+                    </div>
+                    <hr class="text-muted opacity-25">
 
-    <div class="card shadow border-0">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle mb-0">
-                    <thead class="bg-light text-dark">
-                        <tr>
-                            <th class="py-3 ps-4">Üye Adı</th>
-                            <th class="py-3">E-posta / Telefon</th>
-                            <th class="py-3">Kayıt Tarihi</th>
-                            <th class="py-3">Üyelik Durumu</th>
-                            <th class="py-3 text-end pe-4">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label fw-bold text-muted">Telefon Numarası:</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-plaintext">@(Model.PhoneNumber ?? "Belirtilmemiş")</p>
+                        </div>
+                    </div>
+                    <hr class="text-muted opacity-25">
 
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center fw-bold me-3"
-                                         style="width: 40px; height: 40px;">
-                                        AY
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">Ali Yılmaz</div>
-                                        <small class="text-muted">Standart Üyelik</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div>ali.yilmaz@mail.com</div>
-                                <small class="text-muted">(555) 123 45 67</small>
-                            </td>
-                            <td>12 Oca 2024</td>
-                            <td>
-                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Aktif</span>
-                            </td>
-                            <td class="text-end pe-4">
-                                <a href="#" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i> Düzenle</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Sil</a>
-                            </td>
-                        </tr>
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label fw-bold text-muted">Kayıt Tarihi:</label>
+                        <div class="col-sm-8">
+                            <p class="form-control-plaintext">@Model.RegistrationDateTime.ToString("dd MMMM yyyy")</p>
+                        </div>
+                    </div>
 
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-warning text-dark rounded-circle d-flex justify-content-center align-items-center fw-bold me-3"
-                                         style="width: 40px; height: 40px;">
-                                        ZK
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">Zeynep Kaya</div>
-                                        <small class="text-muted">Premium Üyelik</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div>zeynep.kaya@mail.com</div>
-                                <small class="text-muted">(555) 987 65 43</small>
-                            </td>
-                            <td>05 Şub 2024</td>
-                            <td>
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">Pasif</span>
-                            </td>
-                            <td class="text-end pe-4">
-                                <a href="#" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i> Düzenle</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Sil</a>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-danger text-white rounded-circle d-flex justify-content-center align-items-center fw-bold me-3"
-                                         style="width: 40px; height: 40px;">
-                                        MD
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold">Mehmet Demir</div>
-                                        <small class="text-muted">Öğrenci Üyelik</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div>mehmet.demir@mail.com</div>
-                                <small class="text-muted">(555) 444 33 22</small>
-                            </td>
-                            <td>20 Mar 2024</td>
-                            <td>
-                                <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Ödeme Bekliyor</span>
-                            </td>
-                            <td class="text-end pe-4">
-                                <a href="#" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i> Düzenle</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Sil</a>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a asp-controller="User" asp-action="Edit" class="btn btn-warning me-md-2 shadow-sm">
+                            <i class="bi bi-pencil-square me-1"></i> Bilgileri Güncelle
+                        </a>
+                        <a asp-controller="User" asp-action="Logout" class="btn btn-outline-danger shadow-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i> Çıkış Yap
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="card-footer bg-white py-3">
-            <nav aria-label="Sayfalama">
-                <ul class="pagination justify-content-center mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Önceki</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Sonraki</a></li>
-                </ul>
-            </nav>
         </div>
     </div>
 </div>

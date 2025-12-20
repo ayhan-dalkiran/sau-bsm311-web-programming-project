@@ -89,14 +89,14 @@ public class AdminPanelController(ApplicationDbContext context, UserManager<User
         // Not: Gerçekte burada _context.GymServices.Add(model) çalışacak.
 
         TempData["SuccessMessage"] = $"'{model.Name}' hizmeti başarıyla sisteme eklendi.";
-        return RedirectToAction(nameof(Gyms));
+        return RedirectToAction(nameof(Gym));
     }
 
     // YENİ: Hizmet Silme İşlemi
     public ActionResult DeleteGymService(int id) {
         // Not: Gerçekte burada _context.GymServices.Remove(...) çalışacak.
         TempData["ErrorMessage"] = "Hizmet kaydı silindi.";
-        return RedirectToAction(nameof(Gyms));
+        return RedirectToAction(nameof(Gym));
     }
 
     // ==========================================

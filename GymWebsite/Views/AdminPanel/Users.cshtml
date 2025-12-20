@@ -10,7 +10,7 @@
         <h3 class="fw-bold text-dark mb-1">Üyeler</h3>
         <p class="text-muted mb-0">Sisteme kayıtlı sporcuları yönetin.</p>
     </div>
-    <a href="/AdminPanel/CreateUser" class="btn btn-primary">
+    <a asp-action="CreateUser" class="btn btn-primary">
         <i class="bi bi-person-plus-fill me-2"></i> Yeni Üye Ekle
     </a>
 </div>
@@ -31,14 +31,25 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        // İsim baş harflerini güvenli alma (Hata Çözümü)
+                        string initials = "U";
+                        if (!string.IsNullOrEmpty(item.FirstName) && !string.IsNullOrEmpty(item.LastName))
+                        {
+                            initials = item.FirstName.Substring(0, 1) + item.LastName.Substring(0, 1);
+                        }
+                        else if (!string.IsNullOrEmpty(item.Email))
+                        {
+                            initials = item.Email.Substring(0, 1).ToUpper();
+                        }
+
                         <tr>
                             <td class="ps-4">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 40px; height: 40px;">
-                                        @item.FirstName?.Substring(0, 1)@item.LastName?.Substring(0, 1)
+                                        @initials
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-dark">@item.FirstName @item.LastName</div>
+                                        <div class="fw-bold text-dark">@(string.IsNullOrEmpty(item.FirstName) ? "İsimsiz Üye" : item.FirstName + " " + item.LastName)</div>
                                         <div class="small text-muted">ID: @item.Id</div>
                                     </div>
                                 </div>
@@ -50,10 +61,11 @@
                             <td>@item.RegistrationDateTime.ToString("dd.MM.yyyy")</td>
                             <td><span class="badge bg-success">Aktif</span></td>
                             <td class="text-end pe-4">
-                                <a asp-action="EditUser" asp-route=@item.Id class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
+                                @* Link Sözdizimi Düzeltildi *@
+                                <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a asp-action="DeleteUser" asp-route=@item.Id href="/AdminPanel/DeleteUser?id=@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                <a asp-action="DeleteUser" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>
