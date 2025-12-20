@@ -94,33 +94,33 @@
             </div>
             <div class="list-group list-group-flush mt-3">
 
-                <a href="/AdminPanel/Index" class="list-group-item list-group-item-action @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AdminPanel" ? "active" : "")">
+                <a asp-controller="AdminPanel" asp-action="Index" class="list-group-item list-group-item-action">
                     <i class="bi bi-speedometer2 me-2"></i> Dashboard
                 </a>
 
-                <a href="/AdminPanel/Gyms" class="list-group-item list-group-item-action">
+                <a asp-controller="AdminPanel" asp-action="Gym" class="list-group-item list-group-item-action">
                     <i class="bi bi-building me-2"></i> Salon Bilgileri
                 </a>
 
-                <a href="/AdminPanel/Trainers" class="list-group-item list-group-item-action">
+                <a asp-controller="AdminPanel" asp-action="Trainers" class="list-group-item list-group-item-action">
                     <i class="bi bi-person-badge-fill me-2"></i> Antrenörler
                 </a>
 
-                <a href="#" class="list-group-item list-group-item-action">
+                <a asp-controller="AdminPanel" asp-action="Index" class="list-group-item list-group-item-action">
                     <i class="bi bi-card-checklist me-2"></i> Hizmetler
                 </a>
 
-                <a href="/AdminPanel/Users" class="list-group-item list-group-item-action">
+                <a asp-controller="AdminPanel" asp-action="Users" class="list-group-item list-group-item-action">
                     <i class="bi bi-people-fill me-2"></i> Üyeler
                 </a>
 
-                <a href="/AdminPanel/Appointments" class="list-group-item list-group-item-action">
+                <a asp-controller="AdminPanel" asp-action="Appointments" class="list-group-item list-group-item-action">
                     <i class="bi bi-calendar-check me-2"></i> Randevular
                 </a>
 
                 <hr class="border-light my-2 mx-3 opacity-25">
 
-                <a href="/Home/Index" class="list-group-item list-group-item-action text-warning">
+                <a asp-controller="Home" asp-action="Index" class="list-group-item list-group-item-action text-warning">
                     <i class="bi bi-box-arrow-left me-2"></i> Siteye Dön
                 </a>
             </div>
@@ -177,5 +177,7 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

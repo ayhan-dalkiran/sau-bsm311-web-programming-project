@@ -22,7 +22,7 @@ public class UserController(ApplicationDbContext context, UserManager<UserIdenti
             return RedirectToAction("Login");
         }
 
-        var result = await signInManager.PasswordSignInAsync(userLogin.Username, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
+        var result = await signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
 
         if (!result.Succeeded) {
             TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
@@ -70,7 +70,7 @@ public class UserController(ApplicationDbContext context, UserManager<UserIdenti
         }
 
         var user = new UserIdentityAccount {
-            UserName = userDetails.UserName,
+            UserName = userDetails.Email,
             Email = userDetails.Email,
             FirstName = userDetails.FirstName,
             LastName = userDetails.LastName,

@@ -1,6 +1,5 @@
 using GymWebsite.Data;
 using GymWebsite.Models.Business;
-using GymWebsite.Models.Roles;
 using GymWebsite.Models.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +45,8 @@ internal class Program {
 
         app.UseRouting();
 
-        app.UseAuthorization();
         app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllerRoute(
             name: "default",
@@ -56,38 +55,45 @@ internal class Program {
 
         using (var scope = app.Services.CreateScope()) {
             var services = scope.ServiceProvider;
+            //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync(new IdentityRole("Admin"));
             var userManager = services.GetRequiredService<UserManager<UserIdentityAccount>>();
             var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
            //Veritabanı yoksa oluşturur ve bekleyen migrationları uygular.
             dbContext.Database.Migrate();
 
-            if (userManager.FindByNameAsync("g221210020").Result is null) {
-                userManager.CreateAsync(new UserIdentityAccount {
-                    UserName = "g221210020",
+            if (userManager.FindByNameAsync("g221210020@sakarya.edu.tr").Result is null) {
+                var user = new UserIdentityAccount {
+                    UserName = "g221210020@sakarya.edu.tr",
                     Email = "g221210020@sakarya.edu.tr",
                     PhoneNumber = "901234567890",
                     FirstName = "Admin",
                     LastName = "Adminson",
                     RegistrationDateTime = DateTime.UnixEpoch
-                }, "sau").Wait();
+                };
+
+                userManager.CreateAsync(user, "sau").Wait();
+                //userManager.AddToRoleAsync(user, "Admin").Wait();
             }
 
-            if (userManager.FindByNameAsync("g231210080").Result is null) {
-                userManager.CreateAsync(new UserIdentityAccount {
-                    UserName = "g231210080",
+            if (userManager.FindByNameAsync("g231210080@sakarya.edu.tr").Result is null) {
+                var user = new UserIdentityAccount {
+                    UserName = "g231210080@sakarya.edu.tr",
                     Email = "g231210080@sakarya.edu.tr",
                     PhoneNumber = "901234567890",
                     FirstName = "Hadmin",
                     LastName = "Hadminson",
                     RegistrationDateTime = DateTime.UnixEpoch
-                }, "sau").Wait();
+                };
+
+                userManager.CreateAsync(user, "sau").Wait();
+                //userManager.AddToRoleAsync(user, "Admin").Wait();
             }
 
-            if (dbContext.Gyms.Find(1) is null) {
+            if (dbContext.Gyms.SingleOrDefault() is null) {
                 dbContext.Gyms.Add(new Gym {
                     Name = "Power Gym Center",
-                    Address = "Atatürk Caddesi, No: 123 Merkez / İstanbul",
+                    Address = "Atatürk Caddesi, No: 123\nMerkez / İstanbul",
                     PhoneNumber = "02125555555",
                     Email = "info@powergym.com",
                 });

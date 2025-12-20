@@ -1,4 +1,4 @@
-﻿@model GymWebsite.Models.Business.Gym
+﻿@model Gym
 
 @{
     ViewData["Title"] = "Salon Bilgileri";
@@ -37,20 +37,20 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-muted small">SALON ADI</label>
+                            <label asp-for="Name" class="form-label fw-bold text-muted small"></label>
                             <input asp-for="Name" class="form-control form-control-lg" placeholder="Örn: Power Gym Center" />
                             <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-muted small">ADRES</label>
+                            <label asp-for="Address" class="form-label fw-bold text-muted small"></label>
                             <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgisi..."></textarea>
                             <span asp-validation-for="Address" class="text-danger small"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label class="form-label fw-bold text-muted small">TELEFON</label>
+                                <label asp-for="PhoneNumber" class="form-label fw-bold text-muted small"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
                                     <input asp-for="PhoneNumber" class="form-control" placeholder="0212 555 55 55" />
@@ -59,7 +59,7 @@
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label class="form-label fw-bold text-muted small">E-POSTA</label>
+                                <label asp-for="Email" class="form-label fw-bold text-muted small"></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
                                     <input asp-for="Email" class="form-control" placeholder="info@powergym.com" />

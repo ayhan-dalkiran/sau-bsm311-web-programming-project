@@ -4,15 +4,20 @@ using GymWebsite.Models.Staff;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using GymWebsite.Data;
+using GymWebsite.Models.Business;
+using Microsoft.AspNetCore.Identity;
 
 namespace GymWebsite.Controllers.Mvc;
 
 //[Authorize(Roles = "Admin")] 
-public class AdminPanelController : Controller {
+public class AdminPanelController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager) : Controller {
     // GET: AdminPanelController
     public ActionResult Index() => View();
 
-    public ActionResult Gyms() {
+    public ActionResult Gym() {
+        var gym = context.Gyms.First();
+
         // Test için sahte bir salon verisi
         var fakeGym = new GymWebsite.Models.Business.Gym {
             Id = 1,
@@ -22,17 +27,21 @@ public class AdminPanelController : Controller {
             Email = "iletisim@powergym.com"
         };
 
-        return View(fakeGym);
+        return View(gym);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public ActionResult UpdateGym(GymWebsite.Models.Business.Gym model) {
+    public ActionResult UpdateGym(Gym model) {
         if (ModelState.IsValid) {
+            context.Gyms.Update(model);
+            context.SaveChanges();
+
             TempData["SuccessMessage"] = "Salon bilgileri başarıyla güncellendi!";
-            return RedirectToAction("Gyms");
+            return RedirectToAction("Gym");
         }
-        return View("Gyms", model);
+
+        return View("Gym");
     }
 
     public ActionResult Users() {
@@ -44,7 +53,7 @@ public class AdminPanelController : Controller {
             new UserIdentityAccount { Id = "user-3", FirstName = "Mehmet", LastName = "Kaya", Email = "mehmet@mail.com", PhoneNumber = "05329998877", RegistrationDateTime = DateTime.Now }
         };
 
-        return View(userList);
+        return View(context.Users.ToList());
     }
 
     // Yeni Üye Ekleme (GET)
@@ -57,6 +66,11 @@ public class AdminPanelController : Controller {
     [ValidateAntiForgeryToken]
     // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
     public ActionResult CreateUser(UserIdentityAccount model, string Password) {
+        if (!ModelState.IsValid) {
+            return View(model);
+        }
+
+        userManager.CreateAsync(model, Password).Wait();
         return RedirectToAction(nameof(Users));
     }
 
@@ -70,7 +84,8 @@ public class AdminPanelController : Controller {
             Email = "test@kullanici.com",
             PhoneNumber = "0555 123 45 67"
         };
-        return View(fakeUser);
+        var user = context.Users.Find(id);
+        return View(user!);
     }
 
     // Üye Düzenleme (POST)
@@ -78,6 +93,8 @@ public class AdminPanelController : Controller {
     [ValidateAntiForgeryToken]
     // BURAYI GÜNCELLEDİM: GymUserAccount -> UserIdentityAccount
     public ActionResult EditUser(UserIdentityAccount model) {
+        userManager.UpdateAsync(model).Wait();
+
         return RedirectToAction(nameof(Users));
     }
 
@@ -90,13 +107,18 @@ public class AdminPanelController : Controller {
             LastName = "Üye",
             Email = "sil@mail.com"
         };
-        return View(fakeUser);
+        var user = context.Users.Find(id);
+        return View(user);
     }
 
     // Üye Silme (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public ActionResult DeleteUser(string id, IFormCollection collection) {
+        var user = context.Users.Find(id);
+        if (user != null) {
+            userManager.DeleteAsync(user).Wait();
+        }
         return RedirectToAction(nameof(Users));
     }
 

@@ -50,10 +50,10 @@
                             <td>@item.RegistrationDateTime.ToString("dd.MM.yyyy")</td>
                             <td><span class="badge bg-success">Aktif</span></td>
                             <td class="text-end pe-4">
-                                <a href="/AdminPanel/EditUser?id=@item.Id" class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
+                                <a asp-action="EditUser" asp-route=@item.Id class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="/AdminPanel/DeleteUser?id=@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
+                                <a asp-action="DeleteUser" asp-route=@item.Id href="/AdminPanel/DeleteUser?id=@item.Id" class="btn btn-sm btn-outline-danger" title="Sil">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>
