@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "Üye Girişi";
+    Layout = null; /* Bu sayfada menü (navbar) olmasın, tam ekran görünsün diye */
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap - Power Gym</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        /* Animasyon: Yazıların aşağıdan yukarı kayması */
+        @@keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* Sol Taraftaki Görselin Filtresi */
+        .bg-image-container {
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Görselin üzerine siyah perde çekiyoruz ki yazılar okunsun */
+        .bg-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4));
+        }
+
+        /* Input Alanları Odaklanınca */
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+        }
+
+        /* Özel Buton Stili */
+        .btn-gym {
+            background-color: #0d6efd;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-gym:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+            background-color: #0b5ed7;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid vh-100">
+        <div class="row h-100">
+
+            <div class="col-md-7 col-lg-8 p-0 bg-image-container d-none d-md-block">
+                <div class="bg-overlay"></div>
+                <div class="position-absolute top-50 start-50 translate-middle text-white text-center w-75">
+                    <h1 class="display-3 fw-bold mb-3 animate-slide-up">Sınırlarını Zorla.</h1>
+                    <p class="lead fs-4 fw-light animate-slide-up" style="animation-delay: 0.2s;">
+                        "Bugün hissettiğin acı, yarın hissedeceğin güçtür."
+                    </p>
+                    <div class="mt-4 animate-slide-up" style="animation-delay: 0.4s;">
+                        <a href="/" class="btn btn-outline-light rounded-pill px-4">
+                            <i class="bi bi-arrow-left me-2"></i> Ana Sayfaya Dön
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 col-lg-4 bg-white d-flex align-items-center justify-content-center">
+                <div class="w-100 p-5">
+
+                    <div class="text-center mb-5">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px;">
+                            <i class="bi bi-person-fill fs-2"></i>
+                        </div>
+                        <h2 class="fw-bold">Hoş Geldin!</h2>
+                        <p class="text-muted">Hesabına erişmek için bilgilerini gir.</p>
+                    </div>
+
+                    <form>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+                            <label for="emailInput">E-posta Adresi</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="passwordInput" placeholder="Şifre">
+                            <label for="passwordInput">Şifre</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberCheck">
+                                <label class="form-check-label text-muted small" for="rememberCheck">Beni Hatırla</label>
+                            </div>
+                            <a href="#" class="text-decoration-none small fw-bold">Şifremi Unuttum?</a>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button class="btn btn-gym btn-lg fw-bold py-3" type="button">
+                                GİRİŞ YAP
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="text-muted small mb-0">
+                                Hesabın yok mu?
+                                <a href="/User/Register" class="text-primary fw-bold text-decoration-none">Hemen Kayıt Ol</a>
+                            </p>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
