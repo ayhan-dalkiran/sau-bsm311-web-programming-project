@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Dto;
 
-public class UserRegister {
+public class UserDetails {
     [Unicode]
     [Required(ErrorMessage = "Ad alanı zorunludur.")]
     [MaxLength(100, ErrorMessage = "Üye adı 100 karakterden fazla olamaz.")]
@@ -29,10 +29,15 @@ public class UserRegister {
     public string PhoneNumber { get; set; } = string.Empty;
 
     [Display(Name = "Kayıt Tarihi")]
-    public DateTime RegistrationDateTime { get; set; }
+    public DateTime RegistrationDateTime { get; set; } = DateTime.UtcNow;
 
-    [Display(Name = "Kayıt Bitiş Tarihi")]
-    public DateTime? DeactivationDateTime { get; set; }
+    [MinLength(3, ErrorMessage = "Parola en az 3 karakter olmalıdır.")]
+    [Display(Name = "Parola")]
+    public string Password { get; set; } = string.Empty;
+
+    [Compare(nameof(Password), ErrorMessage = "")]
+    [Display(Name = "Parola Terkar")]
+    public string PasswordCheck { get; set; } = string.Empty;
 
     // Veritabanında tutulmayan ama kod içinde kolaylık sağlayan bir yardımcı özellik
     [NotMapped]

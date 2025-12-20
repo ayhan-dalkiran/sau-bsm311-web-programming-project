@@ -8,6 +8,45 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymWebsite.Controllers.Mvc; 
 public class UserController(ApplicationDbContext context, UserManager<GymUserAccount> userManager, SignInManager<GymUserAccount> signInManager) : Controller {
+    public async Task<ActionResult> Register() {
+        var currentUser = await userManager.GetUserAsync(User);
+
+        if (currentUser is null)
+            return View();
+
+        return RedirectToAction("Index");
+    }
+
+    public async Task<ActionResult> Login(UserLogin userLogin) {
+        var result = await signInManager.PasswordSignInAsync(
+            userLogin.Username,
+            userLogin.Password,
+            isPersistent: userLogin.Persistent,
+            lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+            return Unauthorized();
+
+        var user = await userManager.FindByNameAsync(userLogin.Username);
+
+        return RedirectToAction("Index");
+    }
+
+    public async Task<ActionResult> Logout() {
+        await signInManager.SignOutAsync();
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<ActionResult> Index() {
+        var currentUser = await userManager.GetUserAsync(User);
+
+        if (currentUser is null)
+            return RedirectToAction("Register");
+
+        return RedirectToAction("Details", new { id = currentUser.Id });
+    }
+
     [Authorize]
     public async Task<ActionResult> Details(string id) {
         var currentUser = await userManager.GetUserAsync(User);

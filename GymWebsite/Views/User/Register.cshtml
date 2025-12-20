@@ -1,4 +1,5 @@
-﻿@{
+﻿@model UserDetails
+@{
     ViewData["Title"] = "Kayıt Ol";
 }
 
@@ -26,30 +27,30 @@
                 <p class="text-muted">Formu doldurarak hemen aramıza katıl.</p>
             </div>
 
-            <form>
+            <form asp-controller="User" asp-action="Create">
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="floatingInputName" placeholder="Ad">
-                            <label for="floatingInputName">Adınız</label>
+                            <input asp-for="FirstName" type="text" class="form-control" id="floatingInputName" placeholder="Ad">
+                            <label asp-for="FirstName" for="floatingInputName"></label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="floatingInputSurname" placeholder="Soyad">
-                            <label for="floatingInputSurname">Soyadınız</label>
+                            <input asp-for="LastName" type="text" class="form-control" id="floatingInputSurname" placeholder="Soyad">
+                            <label asp-for="LastName" for="floatingInputSurname"></label>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com">
-                    <label for="floatingInputEmail">E-posta Adresi</label>
+                    <input asp-for="Email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com">
+                    <label asp-for="Email" for="floatingInputEmail"></label>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input type="tel" class="form-control" id="floatingInputPhone" placeholder="Telefon">
-                    <label for="floatingInputPhone">Telefon Numarası</label>
+                    <input asp-for="PhoneNumber" type="tel" class="form-control" id="floatingInputPhone" placeholder="Telefon">
+                    <label asp-for="PhoneNumber" for =" floatingInputPhone"></label>
                 </div>
 
                 <div class="form-floating mb-4">
