@@ -1,37 +1,41 @@
 ﻿@model Gym
 
 @{
-    ViewData["Title"] = "Salon Bilgileri";
+    ViewData["Title"] = "Salon ve Hizmet Yönetimi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark">Salon Tanımlamaları</h3>
+            <p class="text-muted mb-0">Salon bilgilerini ve sunulan hizmetlerin ücret/süre detaylarını yönetin.</p>
+        </div>
+    </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h3 class="fw-bold text-dark">Salon Bilgileri</h3>
-                    <p class="text-muted mb-0">Spor salonunun genel bilgilerini buradan yönetebilirsiniz.</p>
-                </div>
-            </div>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+            <i class="bi bi-trash3-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-
-            <div class="card border-0 shadow-sm">
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-header bg-white py-3 border-bottom">
-                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-building me-2"></i> Salon Ayarları</h5>
+                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-building me-2"></i> Salon Bilgileri</h5>
                 </div>
                 <div class="card-body p-4">
-
-                    <form asp-controller="AdminPanel" asp-action="UpdateGym" method="post">
-
+                    <form asp-action="UpdateGym" method="post">
                         <input type="hidden" asp-for="Id" />
 
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -47,7 +51,6 @@
                             <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgisi..."></textarea>
                             <span asp-validation-for="Address" class="text-danger small"></span>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label asp-for="PhoneNumber" class="form-label fw-bold text-muted small"></label>
@@ -67,27 +70,70 @@
                                 <span asp-validation-for="Email" class="text-danger small"></span>
                             </div>
                         </div>
-
-                        <div class="alert alert-light border small">
-                            <i class="bi bi-clock me-2"></i> Çalışma saatlerini düzenlemek için <a href="#" class="fw-bold text-decoration-none">Çalışma Takvimi</a> sayfasını kullanın.
-                        </div>
-
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary fw-bold py-2 shadow-sm">
-                                <i class="bi bi-save2-fill me-2"></i> DEĞİŞİKLİKLERİ KAYDET
-                            </button>
-                        </div>
-
+                        <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-save me-2"></i> GÜNCELLE</button>
                     </form>
                 </div>
             </div>
+        </div>
 
+        <div class="col-lg-7 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-success"><i class="bi bi-tags-fill me-2"></i> Hizmetler & Ücretler</h5>
+                    <a href="/AdminPanel/AddGymService" class="btn btn-sm btn-outline-success fw-bold">
+                        <i class="bi bi-plus-lg me-1"></i> Yeni Hizmet Ekle
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4">Hizmet Adı</th>
+                                    <th>Ücret</th>
+                                    <th>Süre</th>
+                                    <th class="text-end pe-4">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Services != null && Model.Services.Any())
+                                {
+                                    @foreach (var service in Model.Services)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">@service.Name</div>
+                                                <div class="small text-muted text-truncate" style="max-width: 250px;">@service.Description</div>
+                                            </td>
+                                            <td><span class="badge bg-success bg-opacity-10 text-success border border-success px-2">@service.Price.ToString("C2")</span></td>
+                                            <td>
+                                                @if (service.DurationInMinutes > 0)
+                                                {
+                                                    <span><i class="bi bi-clock me-1"></i>@service.DurationInMinutes dk</span>
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <a href="/AdminPanel/DeleteGymService/@service.Id" class="btn btn-sm btn-light text-danger border" onclick="return confirm('Silmek istediğinize emin misiniz?')">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="4" class="text-center py-4 text-muted">Kayıtlı hizmet bulunamadı.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
