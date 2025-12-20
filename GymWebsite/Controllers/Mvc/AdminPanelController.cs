@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymWebsite.Controllers.Mvc;
 
-[Authorize(Roles = "Admin")]
+//[Authorize(Roles = "Admin")] DENEME AMAÇLI YORUM SATIRI YAPTIM BURAYI SON AŞAMADA TEKRAR KOD YAP
 public class AdminPanelController : Controller {
     // GET: AdminPanelController
     public ActionResult Index() => View();

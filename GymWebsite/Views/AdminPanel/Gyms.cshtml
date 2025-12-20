@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Salon Bilgileri";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold">Salon Bilgilerini Düzenle</h5>
+            </div>
+            <div class="card-body p-4">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Salon Adı</label>
+                        <input type="text" class="form-control" value="Power Gym Center">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Adres</label>
+                        <textarea class="form-control" rows="3">Atatürk Caddesi, No: 123 Merkez / İstanbul</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Telefon</label>
+                            <input type="text" class="form-control" value="0212 555 55 55">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">E-posta</label>
+                            <input type="email" class="form-control" value="info@powergym.com">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary float-end">
+                        <i class="bi bi-save me-2"></i> Değişiklikleri Kaydet
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
