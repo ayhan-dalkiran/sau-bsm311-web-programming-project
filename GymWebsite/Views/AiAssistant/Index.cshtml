@@ -1,0 +1,306 @@
+﻿@{
+    ViewData["Title"] = "AI Fitness Asistanı";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">
+            <i class="bi bi-robot"></i> AI Fitness Asistanı
+        </h1>
+        <p class="lead text-muted">Google Gemini destekli yapay zeka, sana özel programı hazırlasın.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-lg border-0 h-100">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-sliders"></i> Fiziksel Bilgilerin</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form id="aiForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Cinsiyet</label>
+                            <select class="form-select" id="genderSelect">
+                                <option value="Erkek">Erkek</option>
+                                <option value="Kadın">Kadın</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label fw-bold">Yaş</label>
+                                <input type="number" class="form-control" id="ageInput" placeholder="25" value="25">
+                            </div>
+                            <div class="col">
+                                <label class="form-label fw-bold">Boy (cm)</label>
+                                <input type="number" class="form-control" id="heightInput" placeholder="180" value="180">
+                            </div>
+                            <div class="col">
+                                <label class="form-label fw-bold">Kilo (kg)</label>
+                                <input type="number" class="form-control" id="weightInput" placeholder="80" value="80">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Hedefin Nedir?</label>
+                            <select class="form-select" id="goalSelect">
+                                <option value="Kilo Vermek">Kilo Vermek / Yağ Yakmak</option>
+                                <option value="Kas Kazanmak">Kas Kütlesi Kazanmak (Hipertrofi)</option>
+                                <option value="Formda Kalmak">Formda Kalmak (Fit)</option>
+                                <option value="Güç Kazanmak">Güç ve Kondisyon</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="button" onclick="getAIPlan()" class="btn btn-primary btn-lg fw-bold hover-effect">
+                                <i class="bi bi-stars"></i> Programımı Oluştur
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+
+            <div id="startScreen" class="text-center d-flex flex-column justify-content-center align-items-center h-100 p-5 bg-light rounded-3 border border-dashed">
+                <i class="bi bi-cpu fs-1 text-muted mb-3"></i>
+                <h4 class="text-muted">Veri Bekleniyor...</h4>
+                <p class="text-muted">Sol taraftaki formu doldurup butona bastığında Gemini AI senin için çalışmaya başlayacak.</p>
+            </div>
+
+            <div id="loadingScreen" class="text-center d-none h-100 py-5">
+                <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h4 class="mt-4 animate-pulse text-primary">Yapay Zeka Analiz Ediyor...</h4>
+                <p class="text-muted">Metabolizma hızı hesaplanıyor, egzersiz veritabanı taranıyor.</p>
+            </div>
+
+            <div id="resultScreen" class="card shadow-lg border-0 border-top border-5 border-success d-none">
+                <div class="card-header bg-white py-3">
+                    <h5 class="text-success mb-0"><i class="bi bi-check-circle-fill me-2"></i>Analiz Tamamlandı</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div id="aiResultContent">
+                    </div>
+
+                    <div class="mt-4 text-center border-top pt-3">
+                        <button class="btn btn-outline-success btn-sm" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Programı Yazdır / PDF Yap
+                        </button>
+                    </div>
+                    <hr class="my-4">
+
+                    <div class="chat-section">
+                        <h5 class="text-primary mb-3"><i class="bi bi-chat-dots"></i> Koç'a Soru Sor</h5>
+
+                        <div id="chatHistory" class="border rounded bg-light p-3 mb-3" style="height: 300px; overflow-y: auto;">
+                            <div class="text-center text-muted small mt-5">
+                                Planınız hakkında değişiklik isteyebilir veya hareketlerin nasıl yapıldığını sorabilirsiniz.
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <input type="text" id="userMessageInput" class="form-control" placeholder="Örn: Kahvaltıdaki yumurtayı değiştir...">
+                            <button class="btn btn-primary" type="button" onclick="sendMessage()">
+                                <i class="bi bi-send-fill"></i> Gönder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // ---------------------------------------------------------
+    // 1. İLK PLAN OLUŞTURMA FONKSİYONU
+    // ---------------------------------------------------------
+    function getAIPlan() {
+        // Ekranları Tanımla
+        var startScreen = document.getElementById("startScreen");
+        var loadingScreen = document.getElementById("loadingScreen");
+        var resultScreen = document.getElementById("resultScreen");
+
+        // Yükleniyor moduna geç
+        startScreen.classList.remove("d-flex");
+        startScreen.classList.add("d-none");
+
+        resultScreen.classList.add("d-none");
+        loadingScreen.classList.remove("d-none");
+
+        // Form Verilerini Topla
+        var requestData = {
+            age: document.getElementById("ageInput").value,
+            height: document.getElementById("heightInput").value,
+            weight: document.getElementById("weightInput").value,
+            gender: document.getElementById("genderSelect").value,
+            goal: document.getElementById("goalSelect").value
+        };
+
+        // Backend'e İstek Gönder
+        $.ajax({
+            url: '/AiAssistant/GetAIPlan',
+            type: 'POST',
+            data: requestData,
+            success: function (response) {
+                loadingScreen.classList.add("d-none");
+
+                if (response.success) {
+                    // Sonucu Göster
+                    resultScreen.classList.remove("d-none");
+                    // Gelen HTML'i kutuya bas
+                    document.getElementById("aiResultContent").innerHTML = response.message;
+                } else {
+                    // Hata varsa başa dön
+                    startScreen.classList.remove("d-none");
+                    startScreen.classList.add("d-flex");
+                    alert("Hata: " + response.message);
+                }
+            },
+            error: function () {
+                loadingScreen.classList.add("d-none");
+                startScreen.classList.remove("d-none");
+                startScreen.classList.add("d-flex");
+                alert("Sunucuya bağlanılamadı.");
+            }
+        });
+    }
+
+    // ---------------------------------------------------------
+    // 2. SOHBET VE GÜNCELLEME FONKSİYONU
+    // ---------------------------------------------------------
+    function sendMessage() {
+        var input = document.getElementById("userMessageInput");
+        var message = input.value;
+        var chatBox = document.getElementById("chatHistory");
+        // Hedef Kutu: Yukarıdaki büyük plan alanı
+        var resultArea = document.getElementById("aiResultContent");
+
+        // Boş mesaj gönderme
+        if (!message.trim()) return;
+
+        // A) Kullanıcı mesajını ekrana bas (Sağ Taraf)
+        chatBox.innerHTML += `
+            <div class="d-flex justify-content-end mb-2">
+                <div class="bg-primary text-white p-2 rounded-3" style="max-width: 75%;">
+                    ${message}
+                </div>
+            </div>`;
+
+        // Inputu temizle ve scroll'u aşağı indir
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // B) Yükleniyor animasyonu ekle (Sol Taraf)
+        var loadingId = "loading-" + Date.now();
+        chatBox.innerHTML += `
+            <div id="${loadingId}" class="d-flex justify-content-start mb-2">
+                <div class="bg-white border p-2 rounded-3 text-muted fst-italic">
+                    <span class="spinner-border spinner-border-sm me-1"></span> Koç düzenliyor...
+                </div>
+            </div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Şu anki planı bağlam (context) olarak al ki AI neyi değiştireceğini bilsin
+        var currentContext = resultArea.innerHTML;
+
+        // Backend'e Gönder
+        $.ajax({
+            url: '/AiAssistant/ChatWithCoach',
+            type: 'POST',
+            data: { userMessage: message, contextHistory: currentContext },
+            success: function (response) {
+                // Yükleniyor balonunu kaldır
+                var loadingEl = document.getElementById(loadingId);
+                if(loadingEl) loadingEl.remove();
+
+                if (response.success) {
+                    var reply = response.message.trim();
+
+                    // *** KRİTİK KONTROL ***
+                    // Eğer cevap [GUNCELLE] ile başlıyorsa -> PLAN KUTUSUNU DEĞİŞTİR
+                    if (reply.includes("[GUNCELLE]")) {
+
+                        // 1. Etiketi sil, temiz HTML'i al
+                        var newPlanHtml = reply.replace("[GUNCELLE]", "");
+
+                        // 2. YUKARIDAKİ KUTUYU GÜNCELLE
+                        resultArea.innerHTML = newPlanHtml;
+
+                        // Görsel Efekt (Yanıp sönme)
+                        resultArea.style.transition = "opacity 0.5s";
+                        resultArea.style.opacity = "0.5";
+                        setTimeout(() => { resultArea.style.opacity = "1"; }, 500);
+
+                        // 3. Sohbet kısmına "Tamamdır" mesajı at
+                        chatBox.innerHTML += `
+                            <div class="d-flex justify-content-start mb-2">
+                                <div class="bg-success text-white p-2 rounded-3 shadow-sm">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Planını yukarıda güncelledim! Kontrol edebilirsin.
+                                </div>
+                            </div>`;
+
+                    } else {
+                        // Cevap [GUNCELLE] içermiyorsa -> NORMAL SOHBET CEVABI VER
+                        chatBox.innerHTML += `
+                            <div class="d-flex justify-content-start mb-2">
+                                <div class="bg-white border p-2 rounded-3 shadow-sm" style="max-width: 75%;">
+                                    <i class="bi bi-robot text-primary me-1"></i> ${reply}
+                                </div>
+                            </div>`;
+                    }
+
+                } else {
+                    alert("Hata: " + response.message);
+                }
+                // Scroll'u en alta indir
+                chatBox.scrollTop = chatBox.scrollHeight;
+            },
+            error: function () {
+                var loadingEl = document.getElementById(loadingId);
+                if(loadingEl) loadingEl.remove();
+                alert("Bağlantı hatası oluştu.");
+            }
+        });
+    }
+
+    // Enter tuşuna basınca mesaj gönderme özelliği
+    document.getElementById("userMessageInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+</script>
+
+<style>
+    /* Razor Syntax hatasını önlemek için iki tane @@ kullandık */
+    @@keyframes pulse {
+        0% {
+            opacity: 0.5;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.5;
+        }
+    }
+
+    .animate-pulse {
+        animation: pulse 1.5s infinite;
+    }
+
+    .hover-effect:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+</style>

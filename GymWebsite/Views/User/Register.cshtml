@@ -1,0 +1,82 @@
+﻿@model UserDetails
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+
+        <div class="col-md-6 d-none d-md-block">
+            <div class="position-relative">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop"
+                     alt="Gym Workout"
+                     class="img-fluid rounded-4 shadow-lg"
+                     style="object-fit: cover; height: 600px; width: 100%;">
+
+                <div class="position-absolute bottom-0 start-0 p-4 text-white"
+                     style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); width: 100%; border-bottom-left-radius: 1rem; border-bottom-right-radius: 1rem;">
+                    <h3>Harekete Geç!</h3>
+                    <p class="mb-0">Bugün atacağın küçük bir adım, yarın büyük bir değişime dönüşecek.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5 offset-md-1">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary">Hesap Oluştur</h2>
+                <p class="text-muted">Formu doldurarak hemen aramıza katıl.</p>
+            </div>
+
+            <form asp-controller="User" asp-action="Create">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="FirstName" type="text" class="form-control" id="floatingInputName" placeholder="Ad">
+                            <label asp-for="FirstName" for="floatingInputName"></label>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="LastName" type="text" class="form-control" id="floatingInputSurname" placeholder="Soyad">
+                            <label asp-for="LastName" for="floatingInputSurname"></label>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" type="email" class="form-control" id="floatingInputEmail" placeholder="name@example.com">
+                    <label asp-for="Email" for="floatingInputEmail"></label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input asp-for="PhoneNumber" type="tel" class="form-control" id="floatingInputPhone" placeholder="Telefon">
+                    <label asp-for="PhoneNumber" for =" floatingInputPhone"></label>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input asp-for="Password" type="password" class="form-control" id="floatingPassword" placeholder="Şifre">
+                    <label asp-for="Password" for="floatingPassword"></label>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input asp-for="PasswordCheck" type="password" class="form-control" id="floatingPasswordCheck" placeholder="Şifre Tekrar">
+                    <label asp-for="PasswordCheck" for="floatingPasswordCheck"></label>
+                    <span asp-validation-for="PasswordCheck" class="text-danger"></span>
+                </div>
+
+                <button class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm hover-effect" type="submit">
+                    <i class="bi bi-person-plus-fill me-2"></i> Ücretsiz Kayıt Ol
+                </button>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">Zaten hesabın var mı? <a href="#" class="text-decoration-none fw-bold">Giriş Yap</a></small>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

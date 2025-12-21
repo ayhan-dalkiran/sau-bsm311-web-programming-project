@@ -1,0 +1,41 @@
+﻿@model GymWebsite.Models.Appointment
+
+@{
+    ViewData["Title"] = "Randevuyu Sil";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container d-flex flex-column align-items-center justify-content-center py-5">
+    <div class="card border-0 shadow-lg text-center" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-x me-2"></i> Randevu Silme</h5>
+        </div>
+        <div class="card-body p-5">
+            <div class="mb-4">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-trash3-fill fs-1"></i>
+                </div>
+                <h4 class="fw-bold text-dark">Bu randevuyu silmek istiyor musunuz?</h4>
+                <p class="text-muted mt-3">
+                    <strong>@Model.Date.ToString("dd MMMM yyyy HH:mm")</strong> tarihindeki
+                    <strong>@(Model.GymMember?.FirstName ?? "Üye")</strong> randevusu kalıcı olarak silinecektir.
+                </p>
+                <div class="alert alert-warning small">
+                    <i class="bi bi-info-circle me-1"></i> Genellikle randevuyu silmek yerine "İptal" statüsüne almanız önerilir.
+                </div>
+            </div>
+
+            <form asp-action="DeleteAppointment" method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                        EVET, KALICI OLARAK SİL
+                    </button>
+                    <a href="/AdminPanel/Appointments" class="btn btn-light btn-lg border">
+                        Hayır, Vazgeç
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

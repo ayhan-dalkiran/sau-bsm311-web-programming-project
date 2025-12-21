@@ -1,0 +1,57 @@
+﻿@model GymService
+
+@{
+    ViewData["Title"] = "Yeni Hizmet Ekle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-dark">Yeni Hizmet Oluştur</h3>
+            <a href="/AdminPanel/Gyms" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Vazgeç</a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="AddGymService" method="post">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">HİZMET TÜRÜ / ADI</label>
+                        <input asp-for="Name" class="form-control" placeholder="Örn: 3 Aylık Fitness, Pilates Seansı" required />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">ÜCRET (TL)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">₺</span>
+                                <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="0.00" required />
+                                <span asp-validation-for="Price" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">SÜRE (Dakika)</label>
+                            <input asp-for="DurationInMinutes" type="number" class="form-control" placeholder="Örn: 45" />
+                            <div class="form-text small">Üyelik gibi süresiz hizmetler için 0 giriniz.</div>
+                            <span asp-validation-for="DurationInMinutes" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small">AÇIKLAMA</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Hizmet kapsamı hakkında bilgi..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success fw-bold">
+                            <i class="bi bi-plus-circle me-2"></i> HİZMETİ KAYDET
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
