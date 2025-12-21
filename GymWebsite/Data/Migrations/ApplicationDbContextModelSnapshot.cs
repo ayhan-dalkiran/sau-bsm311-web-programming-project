@@ -146,9 +146,14 @@ namespace GymWebsite.Data.Migrations
                         .HasPrecision(17, 2)
                         .HasColumnType("decimal(17,2)");
 
+                    b.Property<int?>("TrainerId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GymId");
+
+                    b.HasIndex("TrainerId");
 
                     b.ToTable("GymServices");
                 });
@@ -165,15 +170,10 @@ namespace GymWebsite.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("TrainerId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("TrainerId");
 
                     b.ToTable("Specialties");
                 });
@@ -187,21 +187,24 @@ namespace GymWebsite.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bio")
-                        .HasMaxLength(4000)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(4000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkEndHour")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkStartHour")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -456,7 +459,7 @@ namespace GymWebsite.Data.Migrations
                         .HasForeignKey("GymMemberId");
 
                     b.HasOne("GymWebsite.Models.Staff.Trainer", "Trainer")
-                        .WithMany("Appointments")
+                        .WithMany()
                         .HasForeignKey("TrainerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -485,20 +488,17 @@ namespace GymWebsite.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Gym");
-                });
-
-            modelBuilder.Entity("GymWebsite.Models.Staff.Specialty", b =>
-                {
                     b.HasOne("GymWebsite.Models.Staff.Trainer", null)
-                        .WithMany("Specialties")
+                        .WithMany("Services")
                         .HasForeignKey("TrainerId");
+
+                    b.Navigation("Gym");
                 });
 
             modelBuilder.Entity("GymWebsite.Models.Staff.TrainerOpenDayTimeSpan", b =>
                 {
                     b.HasOne("GymWebsite.Models.Staff.Trainer", "Trainer")
-                        .WithMany("OpenDayTimeSpans")
+                        .WithMany()
                         .HasForeignKey("TrainerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -566,11 +566,7 @@ namespace GymWebsite.Data.Migrations
 
             modelBuilder.Entity("GymWebsite.Models.Staff.Trainer", b =>
                 {
-                    b.Navigation("Appointments");
-
-                    b.Navigation("OpenDayTimeSpans");
-
-                    b.Navigation("Specialties");
+                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }

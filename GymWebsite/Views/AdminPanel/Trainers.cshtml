@@ -1,80 +1,134 @@
-﻿@{
-    ViewData["Title"] = "Antrenör Yönetimi";
+﻿@model IEnumerable<GymWebsite.Models.Staff.Trainer>
+
+@{
+    ViewData["Title"] = "Antrenör Listesi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h3 class="fw-bold text-dark mb-1">Antrenörler</h3>
-        <p class="text-muted mb-0">Spor salonundaki eğitmenleri yönet.</p>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">Eğitmen Kadrosu</h3>
+            <p class="text-muted mb-0">Sisteme kayıtlı antrenörleri ve uzmanlık alanlarını yönetin.</p>
+        </div>
+        <a href="/AdminPanel/Create" class="btn btn-primary fw-bold">
+            <i class="bi bi-plus-lg me-2"></i> Yeni Antrenör Ekle
+        </a>
     </div>
-    <a href="/AdminPanel/Create" class="btn btn-primary">
-        <i class="bi bi-plus-lg me-2"></i> Yeni Antrenör Ekle
-    </a>
-</div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Antrenör Adı</th>
-                        <th>Uzmanlık</th>
-                        <th>Çalışma Saatleri</th>
-                        <th>Durum</th>
-                        <th class="text-end pe-4">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://ui-avatars.com/api/?name=Ali+Veli&background=0D6EFD&color=fff" class="rounded-circle me-3" width="40" height="40">
-                                <div>
-                                    <div class="fw-bold text-dark">Ali Veli</div>
-                                    <div class="small text-muted">ali@powergym.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-info bg-opacity-10 text-info">Fitness</span></td>
-                        <td>09:00 - 18:00</td>
-                        <td><span class="badge bg-success">Aktif</span></td>
-                        <td class="text-end pe-4">
-                            <a href="/AdminPanel/Edit/1" class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="/AdminPanel/Delete/1" class="btn btn-sm btn-outline-danger" title="Sil">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
-                                <img src="https://ui-avatars.com/api/?name=Ayse+Yilmaz&background=dc3545&color=fff" class="rounded-circle me-3" width="40" height="40">
-                                <div>
-                                    <div class="fw-bold text-dark">Ayşe Yılmaz</div>
-                                    <div class="small text-muted">ayse@powergym.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-warning bg-opacity-10 text-warning">Pilates</span></td>
-                        <td>10:00 - 16:00</td>
-                        <td><span class="badge bg-success">Aktif</span></td>
-                        <td class="text-end pe-4">
-                            <a href="/AdminPanel/Edit/2" class="btn btn-sm btn-outline-warning me-1" title="Düzenle">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a href="/AdminPanel/Delete/2" class="btn btn-sm btn-outline-danger" title="Sil">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Antrenör</th>
+                            <th>Uzmanlık / Hizmetler</th>
+                            <th>Mesai Saatleri</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" class="rounded-circle me-3 border" width="45" height="45" style="object-fit: cover;">
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold border border-primary border-opacity-10" style="width: 45px; height: 45px;">
+                                                    @item.FirstName.Substring(0, 1)@item.LastName.Substring(0, 1)
+                                                </div>
+                                            }
 
-                </tbody>
-            </table>
+                                            <div>
+                                                <div class="fw-bold text-dark">@item.FirstName @item.LastName</div>
+                                                <div class="small text-muted text-truncate" style="max-width: 250px;">
+                                                    @(item.Bio?.Length > 50 ? item.Bio.Substring(0, 50) + "..." : item.Bio)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        @if (item.Services != null && item.Services.Any())
+                                        {
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach (var service in item.Services)
+                                                {
+                                                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">
+                                                        @service.Name
+                                                    </span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small fst-italic">Hizmet atanmamış</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center text-muted">
+                                            <i class="bi bi-clock me-2"></i>
+                                            <span class="fw-bold text-dark">@item.WorkStartHour:00</span>
+                                            <span class="mx-1">-</span>
+                                            <span class="fw-bold text-dark">@item.WorkEndHour:00</span>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group">
+                                            <a href="/AdminPanel/Edit/@item.Id" class="btn btn-sm btn-light border text-primary" title="Düzenle">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline" onsubmit="return confirm('Bu antrenörü silmek istediğinize emin misiniz?');">
+                                                <button type="submit" class="btn btn-sm btn-light border text-danger ms-1" title="Sil">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="bi bi-people fs-1 mb-2 opacity-50"></i>
+                                        <span>Henüz kayıtlı antrenör bulunmuyor.</span>
+                                        <a href="/AdminPanel/Create" class="btn btn-sm btn-outline-primary mt-2">İlk Antrenörü Ekle</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

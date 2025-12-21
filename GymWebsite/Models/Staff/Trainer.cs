@@ -1,40 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using GymWebsite.Models.Business; // GymService için gerekli
 
-using System.ComponentModel.DataAnnotations;
-
-namespace GymWebsite.Models.Staff; 
+namespace GymWebsite.Models.Staff;
 
 public class Trainer {
     [Key]
-    [HiddenInput]
     public int Id { get; set; }
 
-    [Unicode]
     [Required(ErrorMessage = "Ad alanı zorunludur.")]
-    [MaxLength(100, ErrorMessage = "Eğitmen adı 100 karakterden fazla olamaz.")]
     [Display(Name = "Ad")]
     public string FirstName { get; set; } = string.Empty;
 
-    [Unicode]
     [Required(ErrorMessage = "Soyad alanı zorunludur.")]
-    [MaxLength(100, ErrorMessage = "Eğitmen soyadı 100 karakterden fazla olamaz.")]
     [Display(Name = "Soyad")]
     public string LastName { get; set; } = string.Empty;
 
-    [Unicode]
-    [MaxLength(4000, ErrorMessage = "Eğitmen biyografisi 4000 karakterden fazla olamaz.")]
     [Display(Name = "Biyografi")]
     public string? Bio { get; set; }
 
-    // Bir antrenörün birden fazla "Müsaitlik Zamanı" olabilir.
-    // (Pazartesi için ayrı, Salı için ayrı satırlar gibi)
-    public ICollection<TrainerOpenDayTimeSpan> OpenDayTimeSpans { get; set; } = [];
+    [Display(Name = "Profil Fotoğrafı")]
+    public string? ImageUrl { get; set; } // Resim yolunu tutacak
 
-    // Antrenörün yapabildiklerini (Uzmanlıklarını) burada ilişkilendiriyoruz.
-    // Bir antrenörün birden fazla uzmanlığı olabilir.
-    public ICollection<Specialty> Specialties { get; set; } = [];
+    // --- YENİ EKLENEN KISIMLAR ---
 
-    // Antrenörün randevularını görebilmesi için
-    public ICollection<Appointment> Appointments { get; set; } = [];
+    // 1. Çalışma Saatleri (Basit başlangıç ve bitiş saati, örn: 09 ve 17)
+    [Display(Name = "Mesai Başlangıç Saati")]
+    public int WorkStartHour { get; set; } = 9; // Varsayılan 09:00
+
+    [Display(Name = "Mesai Bitiş Saati")]
+    public int WorkEndHour { get; set; } = 18; // Varsayılan 18:00
+
+    // 2. Antrenörün verebildiği hizmetler (Çoka-Çok İlişki)
+    // Bu liste sayesinde bir hoca birden fazla hizmet (Pilates, PT) verebilir.
+    public virtual ICollection<GymService> Services { get; set; } = new List<GymService>();
 }
