@@ -90,6 +90,16 @@ namespace GymWebsite.Data.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("WeekdayHours")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("WeekendHours")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
@@ -198,6 +208,9 @@ namespace GymWebsite.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GymId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -212,6 +225,8 @@ namespace GymWebsite.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GymId");
 
                     b.ToTable("Trainers");
                 });
@@ -508,6 +523,15 @@ namespace GymWebsite.Data.Migrations
                     b.Navigation("Gym");
                 });
 
+            modelBuilder.Entity("GymWebsite.Models.Staff.Trainer", b =>
+                {
+                    b.HasOne("GymWebsite.Models.Business.Gym", "Gym")
+                        .WithMany("Trainers")
+                        .HasForeignKey("GymId");
+
+                    b.Navigation("Gym");
+                });
+
             modelBuilder.Entity("GymWebsite.Models.Staff.TrainerOpenDayTimeSpan", b =>
                 {
                     b.HasOne("GymWebsite.Models.Staff.Trainer", "Trainer")
@@ -575,6 +599,8 @@ namespace GymWebsite.Data.Migrations
                     b.Navigation("OpenDayTimeSpans");
 
                     b.Navigation("Services");
+
+                    b.Navigation("Trainers");
                 });
 
             modelBuilder.Entity("GymWebsite.Models.Staff.Trainer", b =>

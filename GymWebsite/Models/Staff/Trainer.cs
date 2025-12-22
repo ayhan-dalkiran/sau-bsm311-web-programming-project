@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using GymWebsite.Models.Business; // GymService için gerekli
+﻿using GymWebsite.Models.Business; // GymService için gerekli
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymWebsite.Models.Staff;
 
@@ -33,4 +34,9 @@ public class Trainer {
     // 2. Antrenörün verebildiği hizmetler (Çoka-Çok İlişki)
     // Bu liste sayesinde bir hoca birden fazla hizmet (Pilates, PT) verebilir.
     public virtual ICollection<GymService> Services { get; set; } = new List<GymService>();
+
+    public int? GymId { get; set; }
+
+    [ForeignKey("GymId")]
+    public virtual Gym? Gym { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿@model Gym
+﻿@model GymWebsite.Models.Business.Gym
 
 @{
     ViewData["Title"] = "Salon ve Hizmet Yönetimi";
@@ -35,7 +35,7 @@
                     <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-building me-2"></i> Salon Bilgileri</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="UpdateGym" method="post">
+                    <form asp-action="EditGym" asp-route-id="@Model.Id" method="post">
                         <input type="hidden" asp-for="Id" />
 
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
@@ -51,6 +51,7 @@
                             <textarea asp-for="Address" class="form-control" rows="3" placeholder="Açık adres bilgisi..."></textarea>
                             <span asp-validation-for="Address" class="text-danger small"></span>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label asp-for="PhoneNumber" class="form-label fw-bold text-muted small"></label>
@@ -70,7 +71,26 @@
                                 <span asp-validation-for="Email" class="text-danger small"></span>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 fw-bold"><i class="bi bi-save me-2"></i> GÜNCELLE</button>
+
+                        <hr class="my-4" />
+
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-clock me-2"></i>Çalışma Saatleri</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="WeekdayHours" class="form-label fw-bold text-muted small"></label>
+                                <input asp-for="WeekdayHours" class="form-control" placeholder="09:00 - 22:00" />
+                                <span asp-validation-for="WeekdayHours" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label asp-for="WeekendHours" class="form-label fw-bold text-muted small"></label>
+                                <input asp-for="WeekendHours" class="form-control" placeholder="10:00 - 20:00" />
+                                <span asp-validation-for="WeekendHours" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">
+                            <i class="bi bi-save me-2"></i> DEĞİŞİKLİKLERİ KAYDET
+                        </button>
                     </form>
                 </div>
             </div>
@@ -96,7 +116,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (Model.Services.Any())
+                                @if (Model.Services != null && Model.Services.Any())
                                 {
                                     @foreach (var service in Model.Services)
                                     {
@@ -113,7 +133,6 @@
                                                 }
                                                 else
                                                 {
-
                                                     <span class="text-muted">-</span>
                                                 }
                                             </td>
