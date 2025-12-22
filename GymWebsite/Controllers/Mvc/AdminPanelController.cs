@@ -119,6 +119,40 @@ public class AdminPanelController : Controller {
         return RedirectToAction(nameof(Gym));
     }
 
+    // 1. Düzenleme Sayfasını Aç (GET)
+    public IActionResult EditGymService(int id) {
+        var service = _context.GymServices.Find(id);
+        if (service == null) {
+            TempData["ErrorMessage"] = "Hizmet bulunamadı.";
+            return RedirectToAction(nameof(Gym));
+        }
+        return View(service);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditGymService(GymService model) {
+        // GymId formdan gelmeyebilir, model state hatası vermemesi için temizliyoruz
+        ModelState.Remove("Gym");
+
+        if (ModelState.IsValid) {
+            var serviceToUpdate = await _context.GymServices.FindAsync(model.Id);
+            if (serviceToUpdate == null) return NotFound();
+
+            // Alanları güncelle
+            serviceToUpdate.Name = model.Name;
+            serviceToUpdate.Description = model.Description;
+            serviceToUpdate.Price = model.Price;
+            serviceToUpdate.DurationInMinutes = model.DurationInMinutes;
+
+            _context.Update(serviceToUpdate);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Hizmet başarıyla güncellendi.";
+            return RedirectToAction(nameof(Gym));
+        }
+        return View(model);
+    }
 
     // ==========================================
     // 2. KULLANICI YÖNETİMİ (USERS)
