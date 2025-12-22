@@ -40,8 +40,11 @@ namespace GymWebsite.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Price")
-                        .HasPrecision(17, 2)
-                        .HasColumnType("decimal(17,2)");
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -52,6 +55,8 @@ namespace GymWebsite.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GymMemberId");
+
+                    b.HasIndex("ServiceId");
 
                     b.HasIndex("TrainerId");
 
@@ -458,6 +463,12 @@ namespace GymWebsite.Data.Migrations
                         .WithMany()
                         .HasForeignKey("GymMemberId");
 
+                    b.HasOne("GymWebsite.Models.Business.GymService", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GymWebsite.Models.Staff.Trainer", "Trainer")
                         .WithMany()
                         .HasForeignKey("TrainerId")
@@ -465,6 +476,8 @@ namespace GymWebsite.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("GymMember");
+
+                    b.Navigation("Service");
 
                     b.Navigation("Trainer");
                 });

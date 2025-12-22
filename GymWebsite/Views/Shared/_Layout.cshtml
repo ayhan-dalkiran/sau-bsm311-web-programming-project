@@ -41,6 +41,15 @@
                             <a class="nav-link text-dark" asp-controller="Appointment" asp-action="Create">Randevu Al</a>
                         </li>
 
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Appointment" asp-action="MyAppointments">
+                                    <i class="bi bi-calendar-check me-1"></i> Randevularım
+                                </a>
+                            </li>
+                        }
+
                         <li class="nav-item">
                             <a class="nav-link text-primary fw-bold" asp-controller="AiAssistant" asp-action="Index">AI Asistanı ✨</a>
                         </li>
