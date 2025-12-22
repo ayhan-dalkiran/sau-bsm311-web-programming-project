@@ -17,15 +17,40 @@ public class AdminPanelController : Controller {
     private readonly UserManager<UserIdentityAccount> _userManager;
     private readonly IWebHostEnvironment _webHostEnvironment;
 
-    // Constructor: Gerekli servisleri içeri alıyoruz (Resim yükleme için IWebHostEnvironment eklendi)
+    // Constructor: Gerekli servisleri içeri alıyoruz
     public AdminPanelController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager, IWebHostEnvironment webHostEnvironment) {
         _context = context;
         _userManager = userManager;
         _webHostEnvironment = webHostEnvironment;
     }
 
-    // GET: AdminPanel/Index
-    public ActionResult Index() => View();
+    // ==========================================
+    // 0. GENEL BAKIŞ (DASHBOARD) - REVİZE EDİLDİ ✅
+    // ==========================================
+    // Burası artık gerçek verileri çekiyor.
+    public async Task<ActionResult> Index() {
+
+        // 1. Toplam Antrenör Sayısı
+        var trainerCount = await _context.Trainers.CountAsync();
+
+        // 2. Toplam Üye Sayısı (Sadece 'Member' rolündekiler)
+        var memberCount = _userManager.Users.Count();
+
+        // 3. Bugünkü Randevu Sayısı (İptal edilmemiş olanlar)
+        var today = DateTime.Today;
+        var appointmentCount = await _context.Appointments
+                                             .Where(a => a.Date.Date == today && a.Status != AppointmentStatus.Cancelled)
+                                             .CountAsync();
+
+        // ViewModel'i dolduruyoruz
+        var model = new AdminDashboardViewModel {
+            TotalTrainers = trainerCount,
+            TotalMembers = memberCount,
+            TodayAppointmentsCount = appointmentCount
+        };
+
+        return View(model);
+    }
 
     // ==========================================
     // 1. SALON VE HİZMET YÖNETİMİ (GYM)
@@ -129,6 +154,7 @@ public class AdminPanelController : Controller {
         return View(service);
     }
 
+    // 2. Düzenlemeyi Kaydet (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditGymService(GymService model) {
