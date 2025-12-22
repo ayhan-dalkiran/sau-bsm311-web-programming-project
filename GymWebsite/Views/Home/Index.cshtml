@@ -1,114 +1,111 @@
 ﻿@model GymWebsite.Models.Business.Gym
+
 @{
-    ViewData["Title"] = "Ana Sayfa";
+    ViewData["Title"] = Model.Name;
+    var services = Model.Services.ToList();
 }
 
-<div class="position-relative text-center text-white mb-5">
-    <div style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1950&q=80');
-                background-size: cover; background-position: center; padding: 100px 0;">
-        <div class="container">
-            <h1 class="display-3 fw-bold mb-3">@Model.Name'e Hoş Geldiniz</h1>
-            <p class="lead mb-4 fs-4">Hayalindeki vücuda kavuşmak için en doğru yerdesin. Profesyonel eğitmenler ve modern ekipmanlar seni bekliyor.</p>
+<div class="p-5 mb-4 bg-dark rounded-3 text-white"
+     style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=1975&auto=format&fit=crop'); background-size: cover; background-position: center;">
+    <div class="container-fluid py-5 text-center">
+        <h1 class="display-3 fw-bold">@Model.Name</h1>
+        <p class="fs-4">Modern ekipmanlar ve uzman kadro ile değişime başla.</p>
 
-            <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-lg fw-bold px-5 py-3 rounded-pill shadow-lg hover-scale">
-                <i class="bi bi-calendar-check-fill me-2"></i> HEMEN RANDEVU AL
-            </a>
-        </div>
+        <a asp-controller="Appointment" asp-action="Create" class="btn btn-warning btn-lg mt-3 fw-bold px-5">
+            Hemen Randevu Al
+        </a>
     </div>
 </div>
 
-<div class="container my-5">
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-5">
-            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
-                <div class="text-primary mb-3"><i class="bi bi-clock-history fs-1"></i></div>
-                <h4 class="fw-bold mb-3">Çalışma Saatleri</h4>
-                <ul class="list-unstyled">
-                    <li class="mb-2 fs-5">Hafta İçi: <span class="fw-bold text-dark">@Model.WeekdayHours</span></li>
-                    <li class="fs-5">Hafta Sonu: <span class="fw-bold text-dark">@Model.WeekendHours</span></li>
-                </ul>
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-8">
+            <h2 class="border-bottom pb-2 mb-3 text-primary">Hakkımızda & İletişim</h2>
+            <p class="lead">Şehrin en kapsamlı spor kompleksi. Geniş antrenman alanları, profesyonel eğitmen kadrosu ve en yeni teknoloji fitness ekipmanları ile hizmetinizdeyiz.</p>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-geo-alt-fill text-danger"></i> Adres</h5>
+                    <p>@Model.Address</p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="bi bi-telephone-fill text-success"></i> İletişim</h5>
+                    <p>
+                        @Model.PhoneNumber<br>
+                        <a href="mailto:@Model.Email" class="text-decoration-none text-dark">@Model.Email</a>
+                    </p>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-5">
-            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
-                <div class="text-primary mb-3"><i class="bi bi-geo-alt-fill fs-1"></i></div>
-                <h4 class="fw-bold mb-3">Bize Ulaşın</h4>
-                <p class="text-muted mb-1 fs-5">@Model.Address</p>
-                <p class="text-dark fw-bold fs-4 mt-2">@Model.PhoneNumber</p>
+        <div class="col-md-4">
+            <div class="card bg-light border-0 shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4"><i class="bi bi-clock"></i> Çalışma Saatleri</h4>
+                    <ul class="list-group list-group-flush bg-transparent">
+                        <li class="list-group-item bg-transparent d-flex justify-content-between">
+                            <span>Hafta İçi</span>
+                            <strong>@Model.WeekdayHours</strong>
+                        </li>
+                        <li class="list-group-item bg-transparent d-flex justify-content-between">
+                            <span>Hafta Sonu</span>
+                            <strong>@Model.WeekendHours</strong>
+                        </li>
+                        <li class="list-group-item bg-transparent d-flex justify-content-between text-muted small text-center mt-2">
+                            <span>*Resmi tatillerde değişiklik gösterebilir.</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold display-5">Sunduğumuz Hizmetler</h2>
-            <p class="text-muted fs-5">Hedeflerinize ulaşmanız için geniş hizmet yelpazesi</p>
-        </div>
+    <h2 class="text-center mb-4 text-primary">Sunduğumuz Hizmetler</h2>
 
-        <div class="row g-4">
-            @if (Model.Services != null && Model.Services.Any())
+    @if (services.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+            @foreach (var service in services)
             {
-                foreach (var service in Model.Services)
-                {
-                    <div class="col-md-4">
-                        <div class="card h-100 border-0 shadow-sm hover-effect transition-card">
-                            <div class="card-body text-center p-4 d-flex flex-column">
-                                <div class="mb-3 text-primary">
-                                    <i class="bi bi-activity fs-1"></i>
-                                </div>
-                                <h4 class="card-title fw-bold">@service.Name</h4>
-                                <p class="card-text text-muted flex-grow-1">@service.Description</p>
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 hover-effect">
+                        <div class="card-header bg-dark text-white text-center fw-bold">@service.Name</div>
+                        <div class="card-body text-center d-flex flex-column">
+                            <h1 class="card-title pricing-card-title text-primary">
+                                ₺@service.Price.ToString("0.##")<small class="text-muted fw-light fs-6"> / seans</small>
+                            </h1>
 
-                                <hr class="my-3">
+                            <ul class="list-unstyled mt-3 mb-4 flex-grow-1">
+                                <li>@service.Description</li>
+                                <li class="text-muted mt-2"><i class="bi bi-clock me-1"></i> @service.DurationInMinutes dk</li>
+                            </ul>
 
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="badge bg-light text-dark border p-2"><i class="bi bi-clock me-1"></i> @service.DurationInMinutes dk</span>
-                                    <span class="h4 text-success fw-bold mb-0">@service.Price.ToString("C0") ₺</span>
-                                </div>
-
-                                <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-primary w-100 fw-bold rounded-pill">
-                                    Randevu Al
-                                </a>
-                            </div>
+                            <a asp-controller="Appointment" asp-action="Create" class="btn btn-outline-primary w-100 mt-auto fw-bold">
+                                Randevu Al
+                            </a>
                         </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-12 text-center text-muted py-5">
-                    <div class="bg-white p-5 rounded shadow-sm d-inline-block">
-                        <i class="bi bi-exclamation-circle fs-1 d-block mb-3 text-warning"></i>
-                        <h4 class="fw-normal">Henüz eklenmiş bir hizmet bulunmamaktadır.</h4>
-                        <p>Admin panelinden hizmet ekleyerek burayı doldurabilirsiniz.</p>
-                        <a href="/AdminPanel/Gym" class="btn btn-sm btn-primary mt-2">Hizmet Ekle (Admin)</a>
                     </div>
                 </div>
             }
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center py-5">
+            <i class="bi bi-exclamation-circle fs-1 d-block mb-3"></i>
+            <h4>Henüz eklenmiş bir hizmet bulunmamaktadır.</h4>
+            <p>Admin panelinden yeni hizmetler ekleyebilirsiniz.</p>
+        </div>
+    }
 </div>
 
 <style>
-    /* Ufak Hover Efektleri */
-    .hover-card:hover {
-        transform: translateY(-5px);
-        transition: 0.3s;
+    .hover-effect {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .transition-card {
-        transition: all 0.3s ease-in-out;
-    }
-
-        .transition-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+        .hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
         }
-
-    .hover-scale:hover {
-        transform: scale(1.05);
-    }
 </style>

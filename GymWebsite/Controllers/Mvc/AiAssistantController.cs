@@ -24,7 +24,7 @@ namespace GymWebsite.Controllers.Mvc {
         [HttpPost]
         public async Task<IActionResult> GetAIPlan(int age, int height, int weight, string gender, string goal) {
             // API Key'inizi buraya yapıştırın
-            string apiKey = "AIzaSyAFK1iBsO1xN5IQLRWMTw5cmwrMGmGBrdE";
+            string apiKey = "AIzaSyB5JDisEFu8f6lLCefpUAEDwXfz0MOFkUE";
 
             
             string apiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}";
