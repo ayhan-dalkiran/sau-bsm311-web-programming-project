@@ -3,16 +3,15 @@ using GymWebsite.Models.Business;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GymWebsite.Controllers.Mvc;
 
 public class GymController(ApplicationDbContext context) : Controller {
-    private readonly Gym coreModel = context.Gyms.Find(1)!;
-
-    public ActionResult Index() => RedirectToAction("Details", new { id = coreModel.Id });
+    public ActionResult Index() => RedirectToAction("Details", new { id = context.Gyms.Single().Id });
 
     public ActionResult Details(int id) {
-        var gym = context.Gyms.Find(id);
+        var gym = context.Gyms.Include(g => g.Services).SingleOrDefault();
 
         if (gym == null) return NotFound();
 
