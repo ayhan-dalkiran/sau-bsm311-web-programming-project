@@ -37,6 +37,12 @@ internal class Program {
             .AddRoles<IdentityRole>() // <--- KRİTİK: Rol yöneticisini aktif etmek için bu şart!
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            //Location for your Custom Login Page
+            options.LoginPath = "/User/Login";
+        });
+
         var app = builder.Build();
 
         // 3. Middleware Ayarları
