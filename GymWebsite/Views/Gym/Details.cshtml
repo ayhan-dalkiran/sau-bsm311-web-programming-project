@@ -1,6 +1,7 @@
 ﻿@model Gym
 @{
     ViewData["Title"] = Model.Name;
+    var services = Model.Services.ToList();
 }
 
 <div class="p-5 mb-4 bg-dark rounded-3 text-white"
@@ -55,6 +56,21 @@
 
     <h2 class="text-center mb-4 text-primary">Sunduğumuz Hizmetler</h2>
     <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+
+        @foreach (var service in services)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 hover-effect">
+                    <div class="card-header bg-dark text-white text-center">@service.Name</div>
+                    <div class="card-body text-center">
+                        <h1 class="card-title pricing-card-title">₺@service.Price.ToString("0.##")<small class="text-muted fw-light">/ay</small></h1>
+                        <ul class="list-unstyled mt-3 mb-4">
+                            <li>@service.Description</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
 
         <div class="col">
             <div class="card h-100 shadow-sm border-0 hover-effect">
