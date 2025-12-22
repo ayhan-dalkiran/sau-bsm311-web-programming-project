@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GymWebsite.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GymWebsite.Controllers.Mvc;
 
-//[Authorize(Roles = "Admin")] 
+[Authorize(Roles = "Admin")] 
 public class AdminPanelController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager) : Controller {
 
     // GET: AdminPanel/Index

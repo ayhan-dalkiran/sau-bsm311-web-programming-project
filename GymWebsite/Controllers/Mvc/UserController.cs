@@ -16,12 +16,14 @@ public class UserController(ApplicationDbContext context, UserManager<UserIdenti
         return RedirectToAction("Index");
     }
 
+    [HttpPost] // Bu attribute eksikti, eklemek iyi olur
     public async Task<ActionResult> Authenticate(UserLogin userLogin) {
         if (!ModelState.IsValid) {
             TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
             return RedirectToAction("Login");
         }
 
+        // Giriş yapma işlemi
         var result = await signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
 
         if (!result.Succeeded) {
@@ -29,6 +31,21 @@ public class UserController(ApplicationDbContext context, UserManager<UserIdenti
             return RedirectToAction("Login");
         }
 
+        // --- ROL KONTROLÜ BAŞLANGIÇ ---
+
+        // 1. Giriş yapan kullanıcıyı buluyoruz
+        var user = await userManager.FindByEmailAsync(userLogin.Email);
+
+        // 2. Kullanıcı bulunduysa ve "Admin" rolündeyse Admin Paneline yönlendir
+        if (user != null && await userManager.IsInRoleAsync(user, "Admin")) {
+            // AdminPanelController'ın 'Index' veya 'Gym' metoduna yönlendir.
+            // Eğer Dashboard yaptıysak 'Index', direkt salon bilgileriyse 'Gym' yazabilirsin.
+            return RedirectToAction("Index", "AdminPanel");
+        }
+
+        // --- ROL KONTROLÜ BİTİŞ ---
+
+        // Admin değilse normal Ana Sayfaya yönlendir
         return RedirectToAction("Index", "Home");
     }
 
