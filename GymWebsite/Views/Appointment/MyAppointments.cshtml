@@ -1,0 +1,116 @@
+﻿@using GymWebsite.Models
+@model IEnumerable<GymWebsite.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Randevularım";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary">Randevularım</h2>
+            <p class="text-muted">Geçmiş ve yaklaşan tüm randevularınız.</p>
+        </div>
+        <a href="/Appointment/Create" class="btn btn-primary fw-bold">
+            <i class="bi bi-plus-lg me-2"></i> Yeni Randevu Al
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Tarih & Saat</th>
+                            <th>Hizmet</th>
+                            <th>Antrenör</th>
+                            <th>Süre / Ücret</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">@item.Date.ToString("dd MMMM yyyy")</div>
+                                        <div class="small text-muted">@item.Date.ToString("HH:mm")</div>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-bold">@(item.Service?.Name ?? "Bilinmiyor")</span>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-2 fw-bold" style="width: 35px; height: 35px;">
+                                                @item.Trainer?.FirstName.Substring(0, 1)
+                                            </div>
+                                            <span>@item.Trainer?.FirstName @item.Trainer?.LastName</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="small text-muted"><i class="bi bi-clock me-1"></i> @item.DurationInMinutes dk</div>
+                                        <div class="fw-bold text-success">@item.Price.ToString("N2") ₺</div>
+                                    </td>
+
+                                    <td>
+                                        @switch (item.Status)
+                                        {
+                                            case AppointmentStatus.Pending:
+                                                <span class="badge bg-warning text-dark border border-warning border-opacity-25 rounded-pill px-3">
+                                                    <i class="bi bi-hourglass-split me-1"></i> Onay Bekliyor
+                                                </span>
+                                                break;
+                                            case AppointmentStatus.Confirmed:
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Onaylandı
+                                                </span>
+                                                break;
+                                            case AppointmentStatus.Cancelled:
+                                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3">
+                                                    <i class="bi bi-x-circle-fill me-1"></i> İptal Edildi
+                                                </span>
+                                                break;
+                                            case AppointmentStatus.Completed:
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3">
+                                                    <i class="bi bi-flag-fill me-1"></i> Tamamlandı
+                                                </span>
+                                                break;
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <i class="bi bi-calendar-x fs-1 mb-2 opacity-50"></i>
+                                        <span>Henüz hiç randevunuz bulunmuyor.</span>
+                                        <a href="/Appointment/Create" class="btn btn-sm btn-outline-primary mt-2">İlk Randevuyu Al</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

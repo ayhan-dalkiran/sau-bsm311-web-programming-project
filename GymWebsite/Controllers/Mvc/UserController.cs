@@ -1,73 +1,69 @@
 ﻿using GymWebsite.Data;
-using GymWebsite.Models.Business;
-using GymWebsite.Models.Users;
+using GymWebsite.Models.Users; // ViewModel'lerin olduğu namespace
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GymWebsite.Controllers.Mvc; 
-public class UserController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager, SignInManager<UserIdentityAccount> signInManager) : Controller {
-    public async Task<ActionResult> Login() {
-        var currentUser = await userManager.GetUserAsync(User);
+namespace GymWebsite.Controllers.Mvc;
 
-        if (currentUser is null)
-            return View();
+public class UserController : Controller {
 
-        return RedirectToAction("Index");
+    private readonly UserManager<UserIdentityAccount> _userManager;
+    private readonly SignInManager<UserIdentityAccount> _signInManager;
+    private readonly ApplicationDbContext _context;
+
+    public UserController(ApplicationDbContext context, UserManager<UserIdentityAccount> userManager, SignInManager<UserIdentityAccount> signInManager) {
+        _context = context;
+        _userManager = userManager;
+        _signInManager = signInManager;
     }
 
-    public async Task<ActionResult> Authenticate(UserLogin userLogin) {
+    // ==========================================
+    // 1. GİRİŞ VE KAYIT İŞLEMLERİ (AUTH)
+    // ==========================================
+
+    [HttpGet]
+    public IActionResult Login() {
+        if (_signInManager.IsSignedIn(User)) return RedirectToAction("Index", "Home");
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Authenticate(UserLogin userLogin) {
         if (!ModelState.IsValid) {
-            TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
-            return RedirectToAction("Login");
+            return View("Login");
         }
 
-        var result = await signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Password, userLogin.Persistent, lockoutOnFailure: false);
 
         if (!result.Succeeded) {
-            TempData["ErrorMessage"] = "Geçersiz kullanıcı adı veya şifre";
-            return RedirectToAction("Login");
+            TempData["ErrorMessage"] = "Geçersiz e-posta veya şifre.";
+            return View("Login");
+        }
+
+        // --- ROL YÖNLENDİRMESİ ---
+        var user = await _userManager.FindByEmailAsync(userLogin.Email);
+        if (user != null && await _userManager.IsInRoleAsync(user, "Admin")) {
+            return RedirectToAction("Index", "AdminPanel");
         }
 
         return RedirectToAction("Index", "Home");
     }
 
-    public async Task<ActionResult> Logout() {
-        await signInManager.SignOutAsync();
-
+    public async Task<IActionResult> Logout() {
+        await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
 
-    public async Task<ActionResult> Index() {
-        if (!signInManager.IsSignedIn(User))
-            return RedirectToAction("Register");
-
-        return RedirectToAction("Details");
+    [HttpGet]
+    public IActionResult Register() {
+        if (_signInManager.IsSignedIn(User)) return RedirectToAction("Index", "Home");
+        return View();
     }
 
-    //Read (View)
-    //Update (View)
-    [Authorize]
-    public async Task<ActionResult> Details() {
-        var currentUser = await userManager.GetUserAsync(User);
-
-        return View(currentUser!);
-    }
-
-    //Create (View)
-    public async Task<ActionResult> Register() {
-        if (!signInManager.IsSignedIn(User))
-            return View();
-
-        return RedirectToAction("Index");
-    }
-
-    //Create
-    public async Task<ActionResult> Create(UserDetails userDetails) {
-        if (!ModelState.IsValid) {
-            TempData["ErrorMessage"] = "Hata! Kullanıcı oluşturulamadı";
-            return RedirectToAction("Register");
-        }
+    [HttpPost]
+    public async Task<IActionResult> Create(UserDetails userDetails) {
+        if (!ModelState.IsValid) return View("Register", userDetails);
 
         var user = new UserIdentityAccount {
             UserName = userDetails.Email,
@@ -75,54 +71,111 @@ public class UserController(ApplicationDbContext context, UserManager<UserIdenti
             FirstName = userDetails.FirstName,
             LastName = userDetails.LastName,
             PhoneNumber = userDetails.PhoneNumber,
-            RegistrationDateTime = DateTime.UtcNow
+            RegistrationDateTime = DateTime.Now
         };
-        var result = await userManager.CreateAsync(user, userDetails.Password);
 
-        if (!result.Succeeded) {
-            TempData["ErrorMessage"] = "Hata! Kullanıcı oluşturulamadı";
-            return RedirectToAction("Register");
+        var result = await _userManager.CreateAsync(user, userDetails.Password);
+
+        if (result.Succeeded) {
+            // Kayıt olur olmaz otomatik 'Member' rolü verelim
+            await _userManager.AddToRoleAsync(user, "Member");
+
+            // Otomatik giriş yaptırabiliriz veya login'e atabiliriz
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return RedirectToAction("Index", "Home");
         }
 
-        return RedirectToAction("Details");
+        foreach (var error in result.Errors) {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View("Register", userDetails);
     }
 
-    //Update
+
+    // ==========================================
+    // 2. KULLANICI PROFİL İŞLEMLERİ
+    // ==========================================
+
+    // Hesabım (Dashboard) Sayfası
     [Authorize]
-    public async Task<ActionResult> Edit(UserDetails userDetails) {
-        if (!ModelState.IsValid) {
-            TempData["ErrorMessage"] = "Hata! Kullanıcı ayarları değiştirilemedi";
-            return RedirectToAction("Details");
-        }
+    public async Task<IActionResult> Profile() {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login");
 
-        var user = (await userManager.GetUserAsync(User))!;
-        user.Email = userDetails.Email;
-
-
-        var result = await userManager.UpdateAsync(user);
-
-        if (!result.Succeeded) {
-            TempData["ErrorMessage"] = "Hata! Kullanıcı ayarları değiştirilemedi";
-            return RedirectToAction("Details", user.Id);
-        }
-
-        return RedirectToAction("Details", user.Id);
+        return View(user); // Views/User/Profile.cshtml
     }
 
+    // Profil Düzenleme (GET)
     [Authorize]
-    public async Task<ActionResult> Delete() {
-        var currentUser = await userManager.GetUserAsync(User);
+    public async Task<IActionResult> EditProfile() {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login");
 
-        if (currentUser == null)
-            return Unauthorized();
+        var model = new UserEditViewModel {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber
+        };
 
-        var result = await userManager.DeleteAsync(currentUser!);
+        return View(model); // Views/User/EditProfile.cshtml
+    }
 
-        if (!result.Succeeded) {
-            TempData["ErrorMessage"] = "Hata! Kullanıcı silinemedi";
-            return RedirectToAction("Details", currentUser.Id);
+    // Profil Düzenleme (POST)
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(UserEditViewModel model) {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login");
+
+        // Bilgileri güncelle
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.PhoneNumber = model.PhoneNumber;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded) {
+            TempData["SuccessMessage"] = "Profil bilgileriniz güncellendi.";
+            return RedirectToAction(nameof(Profile));
         }
 
-        return RedirectToAction("Index", "Home");
+        foreach (var error in result.Errors) ModelState.AddModelError("", error.Description);
+        return View(model);
+    }
+
+    // Şifre Değiştirme (GET)
+    [Authorize]
+    public IActionResult ChangePassword() {
+        return View(); // Views/User/ChangePassword.cshtml
+    }
+
+    // Şifre Değiştirme (POST)
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model) {
+        if (!ModelState.IsValid) return View(model);
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login");
+
+        // Eski şifreyi kontrol edip değiştirme işlemi
+        var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+        if (result.Succeeded) {
+            await _signInManager.RefreshSignInAsync(user); // Oturumu yenile
+            TempData["SuccessMessage"] = "Şifreniz başarıyla değiştirildi.";
+            return RedirectToAction(nameof(Profile));
+        }
+
+        foreach (var error in result.Errors) {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View(model);
     }
 }

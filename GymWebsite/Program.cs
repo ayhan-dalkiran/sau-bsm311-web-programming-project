@@ -5,33 +5,47 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 internal class Program {
-    private static void Main(string[] args) {
+    // Main metodunu 'async Task' yaptık ki içeride 'await' kullanabilelim (Daha sağlıklı)
+    private static async Task Main(string[] args) {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        // 1. Veritabanı Bağlantısı
+        string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        options.UseSqlServer(connectionString, sqlOptions => {
-            sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5, // Maksimum 5 kere dene
-                maxRetryDelay: TimeSpan.FromSeconds(10), // Denemeler arası 10 saniye bekle
-                errorNumbersToAdd: null);
-        }));
+            options.UseSqlServer(connectionString, sqlOptions => {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorNumbersToAdd: null);
+            }));
+
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         builder.Services.AddControllersWithViews();
-        builder.Services.AddDefaultIdentity<UserIdentityAccount>(options => {
-                options.Password.RequiredLength = 3;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-        //builder.Services.AddScoped<I>();
+        // 2. Identity Ayarları (Şifre Kuralları ve Rol Yönetimi)
+        builder.Services.AddDefaultIdentity<UserIdentityAccount>(options => {
+            // Şifre kurallarını esnetiyoruz (Ödev için 'sau' şifresine izin vermek adına)
+            options.Password.RequiredLength = 3;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.SignIn.RequireConfirmedAccount = false;
+        })
+            .AddRoles<IdentityRole>() // <--- KRİTİK: Rol yöneticisini aktif etmek için bu şart!
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            //Location for your Custom Login Page
+            options.LoginPath = "/User/Login";
+        });
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+        // 3. Middleware Ayarları
         if (app.Environment.IsDevelopment()) {
             app.UseMigrationsEndPoint();
         }
@@ -45,62 +59,85 @@ internal class Program {
 
         app.UseRouting();
 
-        app.UseAuthentication();
-        app.UseAuthorization();
+        app.UseAuthentication(); // Kimlik Doğrulama
+        app.UseAuthorization();  // Yetkilendirme
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
 
+        // 4. BAŞLANGIÇ VERİLERİ (SEEDING)
+        // Uygulama her başladığında burası çalışır ve eksikleri tamamlar.
         using (var scope = app.Services.CreateScope()) {
             var services = scope.ServiceProvider;
-            //var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>().CreateAsync(new IdentityRole("Admin"));
-            var userManager = services.GetRequiredService<UserManager<UserIdentityAccount>>();
-            var dbContext = services.GetRequiredService<ApplicationDbContext>();
+            try {
+                var dbContext = services.GetRequiredService<ApplicationDbContext>();
+                var userManager = services.GetRequiredService<UserManager<UserIdentityAccount>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-           //Veritabanı yoksa oluşturur ve bekleyen migrationları uygular.
-            dbContext.Database.Migrate();
+                // A. Veritabanını Güncelle (Migration'ları uygula)
+                await dbContext.Database.MigrateAsync();
 
-            if (userManager.FindByNameAsync("g221210020@sakarya.edu.tr").Result is null) {
-                var user = new UserIdentityAccount {
-                    UserName = "g221210020@sakarya.edu.tr",
-                    Email = "g221210020@sakarya.edu.tr",
-                    PhoneNumber = "901234567890",
-                    FirstName = "Admin",
-                    LastName = "Adminson",
-                    RegistrationDateTime = DateTime.UnixEpoch
-                };
+                // B. Rolleri Oluştur (Eğer yoksa)
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
 
-                userManager.CreateAsync(user, "sau").Wait();
-                //userManager.AddToRoleAsync(user, "Admin").Wait();
+                if (!await roleManager.RoleExistsAsync("Member"))
+                    await roleManager.CreateAsync(new IdentityRole("Member"));
+
+                // C. Admin Kullanıcısı 1 Oluşturma
+                string admin1Email = "g221210020@sakarya.edu.tr";
+                if (await userManager.FindByEmailAsync(admin1Email) == null) {
+                    var user = new UserIdentityAccount {
+                        UserName = admin1Email,
+                        Email = admin1Email,
+                        PhoneNumber = "905551112233",
+                        FirstName = "Admin",
+                        LastName = "User 1",
+                        RegistrationDateTime = DateTime.Now,
+                        EmailConfirmed = true
+                    };
+                    // Kullanıcıyı oluştur
+                    var result = await userManager.CreateAsync(user, "sau");
+                    // Rol Ata
+                    if (result.Succeeded) await userManager.AddToRoleAsync(user, "Admin");
+                }
+
+                // D. Admin Kullanıcısı 2 Oluşturma
+                string admin2Email = "g231210080@sakarya.edu.tr";
+                if (await userManager.FindByEmailAsync(admin2Email) == null) {
+                    var user = new UserIdentityAccount {
+                        UserName = admin2Email,
+                        Email = admin2Email,
+                        PhoneNumber = "905554445566",
+                        FirstName = "Hadmin",
+                        LastName = "User 2",
+                        RegistrationDateTime = DateTime.Now,
+                        EmailConfirmed = true
+                    };
+                    var result = await userManager.CreateAsync(user, "sau");
+                    if (result.Succeeded) await userManager.AddToRoleAsync(user, "Admin");
+                }
+
+                // E. Varsayılan Spor Salonu Oluşturma
+                if (!dbContext.Gyms.Any()) {
+                    dbContext.Gyms.Add(new Gym {
+                        Name = "Power Gym Center",
+                        Address = "Atatürk Caddesi, No: 123\nMerkez / İstanbul",
+                        PhoneNumber = "0212 555 55 55",
+                        Email = "info@powergym.com",
+                    });
+                    await dbContext.SaveChangesAsync();
+                }
             }
-
-            if (userManager.FindByNameAsync("g231210080@sakarya.edu.tr").Result is null) {
-                var user = new UserIdentityAccount {
-                    UserName = "g231210080@sakarya.edu.tr",
-                    Email = "g231210080@sakarya.edu.tr",
-                    PhoneNumber = "901234567890",
-                    FirstName = "Hadmin",
-                    LastName = "Hadminson",
-                    RegistrationDateTime = DateTime.UnixEpoch
-                };
-
-                userManager.CreateAsync(user, "sau").Wait();
-                //userManager.AddToRoleAsync(user, "Admin").Wait();
-            }
-
-            if (dbContext.Gyms.SingleOrDefault() is null) {
-                dbContext.Gyms.Add(new Gym {
-                    Name = "Power Gym Center",
-                    Address = "Atatürk Caddesi, No: 123\nMerkez / İstanbul",
-                    PhoneNumber = "02125555555",
-                    Email = "info@powergym.com",
-                });
-                dbContext.SaveChanges();
+            catch (Exception ex) {
+                // Hata olursa konsola yaz (Loglama)
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "Veritabanı oluşturulurken hata meydana geldi.");
             }
         }
 
-        app.Run();
+        await app.RunAsync();
     }
 }

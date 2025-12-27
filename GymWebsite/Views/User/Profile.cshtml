@@ -1,0 +1,63 @@
+﻿@model GymWebsite.Models.Users.UserIdentityAccount
+@{
+    ViewData["Title"] = "Hesabım";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-person-circle me-2"></i>Kullanıcı Bilgileri</h5>
+                    <span class="badge bg-white text-primary">Üye Paneli</span>
+                </div>
+                <div class="card-body p-4 text-center">
+
+                    <div class="mb-4">
+                        <div class="display-1 text-muted"><i class="bi bi-person-circle"></i></div>
+                        <h3 class="fw-bold mt-2">@Model.FirstName @Model.LastName</h3>
+                        <p class="text-muted">@Model.Email</p>
+                    </div>
+
+                    <div class="row text-start bg-light p-3 rounded mb-4">
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted fw-bold">Kayıt Tarihi</small>
+                            <div class="fs-5">@Model.RegistrationDateTime.ToString("dd MMMM yyyy")</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted fw-bold">Telefon</small>
+                            <div class="fs-5">@(Model.PhoneNumber ?? "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <a href="/User/EditProfile" class="btn btn-outline-primary fw-bold px-4">
+                            <i class="bi bi-pencil-square me-2"></i> Bilgileri Düzenle
+                        </a>
+                        <a href="/User/ChangePassword" class="btn btn-outline-danger fw-bold px-4">
+                            <i class="bi bi-key-fill me-2"></i> Şifre Değiştir
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="/Appointment/MyAppointments" class="btn btn-link text-decoration-none fw-bold">
+                    <i class="bi bi-calendar-check me-2"></i>Randevularıma Git
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Randevu Al";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container py-5">
@@ -8,6 +9,13 @@
         <p class="text-muted">Size uygun antrenörü ve saati seçerek hemen yerinizi ayırtın.</p>
     </div>
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger text-center mb-4 shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
     <div class="row">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 mb-4">
@@ -15,31 +23,36 @@
                     <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-calendar-plus me-2"></i>Randevu Detayları</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form>
+
+                    <form asp-action="Create" method="post" id="bookingForm">
+
                         <div class="mb-4">
                             <label class="form-label fw-bold">Hizmet Türü</label>
-                            <select class="form-select form-select-lg" id="serviceSelect" onchange="updateSummary()">
-                                <option value="0" data-price="0" data-duration="0" selected>Seçiniz...</option>
-                                <option value="1" data-price="750" data-duration="60">Birebir Fitness (PT)</option>
-                                <option value="2" data-price="500" data-duration="50">Pilates Dersi</option>
-                                <option value="3" data-price="400" data-duration="45">Yoga Seansı</option>
-                                <option value="4" data-price="300" data-duration="30">Beslenme Danışmanlığı</option>
+                            <select name="ServiceId" class="form-select form-select-lg" id="serviceSelect" onchange="updateSummary()" required>
+                                <option value="" data-price="0" data-duration="0" selected>Seçiniz...</option>
+                                @if (ViewBag.ServiceList != null)
+                                {
+                                    // Veritabanındaki hizmetleri döngüyle yazdırıyoruz
+                                    foreach (var service in (List<GymWebsite.Models.Business.GymService>)ViewBag.ServiceList)
+                                    {
+                                        <option value="@service.Id" data-price="@service.Price" data-duration="@service.DurationInMinutes">
+                                            @service.Name
+                                        </option>
+                                    }
+                                }
                             </select>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Eğitmen Tercihi</label>
-                            <select class="form-select" id="trainerSelect" onchange="updateSummary()">
-                                <option selected disabled>Eğitmen Seçiniz...</option>
-                                <option>Mehmet Demir (Fitness)</option>
-                                <option>Ayşe Yılmaz (Yoga & Pilates)</option>
-                                <option>Caner Kaya (Kardiyo)</option>
+                            <select name="TrainerId" class="form-select" id="trainerSelect" asp-items="ViewBag.Trainers" onchange="updateSummary()" required>
+                                <option value="" selected disabled>Eğitmen Seçiniz...</option>
                             </select>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-bold">Tarih</label>
-                            <input type="date" class="form-control" id="dateInput" onchange="updateSummary()">
+                            <input type="date" class="form-control" id="dateInput" min="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="updateSummary()" required>
                         </div>
 
                         <div class="mb-3">
@@ -51,16 +64,28 @@
                                 <input type="radio" class="btn-check" name="timeSlot" id="t2" value="10:00" onchange="selectTime(this)">
                                 <label class="btn btn-outline-primary" for="t2">10:00</label>
 
-                                <input type="radio" class="btn-check" name="timeSlot" id="t3" value="11:30" onchange="selectTime(this)">
-                                <label class="btn btn-outline-primary" for="t3">11:30</label>
+                                <input type="radio" class="btn-check" name="timeSlot" id="t3" value="11:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t3">11:00</label>
 
-                                <input type="radio" class="btn-check" name="timeSlot" id="t4" value="14:00" onchange="selectTime(this)">
-                                <label class="btn btn-outline-primary" for="t4">14:00</label>
+                                <input type="radio" class="btn-check" name="timeSlot" id="t4" value="13:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t4">13:00</label>
 
-                                <input type="radio" class="btn-check" name="timeSlot" id="t5" value="16:00" disabled>
-                                <label class="btn btn-outline-secondary text-decoration-line-through" for="t5">16:00</label>
+                                <input type="radio" class="btn-check" name="timeSlot" id="t5" value="14:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t5">14:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t6" value="15:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t6">15:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t7" value="16:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t7">16:00</label>
+
+                                <input type="radio" class="btn-check" name="timeSlot" id="t8" value="17:00" onchange="selectTime(this)">
+                                <label class="btn btn-outline-primary" for="t8">17:00</label>
                             </div>
                         </div>
+
+                        <input type="hidden" name="Date" id="finalDateInput" required />
+
                     </form>
                 </div>
             </div>
@@ -95,7 +120,7 @@
                         <span class="h3 text-primary fw-bold mb-0" id="summaryPrice">0 ₺</span>
                     </div>
 
-                    <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="completeBooking()">
+                    <button type="button" class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="submitBooking()">
                         <i class="bi bi-check-circle-fill me-2"></i> Randevuyu Onayla
                     </button>
                 </div>
@@ -113,37 +138,40 @@
         const trainerSelect = document.getElementById("trainerSelect");
         const dateInput = document.getElementById("dateInput");
 
-        // Seçilen verileri al
-        // selectedOptions[0] -> Seçili olan <option> etiketini yakalar
+        // --- HİZMET BİLGİLERİ ---
         const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
 
+        // Data attribute'lardan veriyi çek (Veritabanından gelen veriler)
         const serviceName = selectedOption.text;
-        const price = selectedOption.getAttribute("data-price");
-        const duration = selectedOption.getAttribute("data-duration");
+        const price = selectedOption.getAttribute("data-price") || 0;
+        const duration = selectedOption.getAttribute("data-duration") || 0;
 
-        const trainerName = trainerSelect.value;
+        // --- EĞİTMEN BİLGİSİ ---
+        // Seçili index 0 ise (Varsayılan) eğitmen seçilmemiştir
+        const trainerName = trainerSelect.value ? trainerSelect.options[trainerSelect.selectedIndex].text : "-";
+
+        // --- TARİH BİLGİSİ ---
         const dateValue = dateInput.value;
 
         // Özeti Güncelle
-        if (serviceSelect.value !== "0") {
+        if (serviceSelect.value) {
             document.getElementById("summaryService").innerText = serviceName;
             document.getElementById("summaryPrice").innerText = price + " ₺";
             document.getElementById("summaryDuration").innerText = duration + " dk";
         } else {
             document.getElementById("summaryService").innerText = "-";
             document.getElementById("summaryPrice").innerText = "0 ₺";
+            document.getElementById("summaryDuration").innerText = "0 dk";
         }
 
-        if (trainerSelect.selectedIndex !== 0) {
-            document.getElementById("summaryTrainer").innerText = trainerName;
-        }
+        document.getElementById("summaryTrainer").innerText = trainerName;
 
-        // Tarih ve Saati Birleştir
-        let dateTimeString = dateValue ? dateValue : "-";
+        // Tarih ve Saati Ekranda Göster
+        let displayDate = dateValue ? dateValue : "-";
         if (selectedTime) {
-            dateTimeString += " / " + selectedTime;
+            displayDate += " / " + selectedTime;
         }
-        document.getElementById("summaryDate").innerText = dateTimeString;
+        document.getElementById("summaryDate").innerText = displayDate;
     }
 
     // Saat butonuna tıklanınca çalışır
@@ -152,8 +180,23 @@
         updateSummary();
     }
 
-    // Onayla butonuna basınca (Backend olmadığı için alert veriyoruz)
-    function completeBooking() {
-        alert("Randevu talebiniz başarıyla alınmıştır! (Simülasyon)");
+    // "Randevuyu Onayla" butonuna basınca çalışır
+    function submitBooking() {
+        const dateInput = document.getElementById("dateInput").value;
+        const serviceId = document.getElementById("serviceSelect").value;
+        const trainerId = document.getElementById("trainerSelect").value;
+
+        // 1. Doğrulama
+        if (!serviceId || !trainerId || !dateInput || !selectedTime) {
+            alert("Lütfen tüm alanları (Hizmet, Eğitmen, Tarih ve Saat) eksiksiz doldurunuz.");
+            return;
+        }
+
+        // 2. Tarih ve Saati Birleştir (Örn: "2023-12-25T14:00")
+        const finalDateTime = dateInput + "T" + selectedTime;
+        document.getElementById("finalDateInput").value = finalDateTime;
+
+        // 3. Formu Gönder
+        document.getElementById("bookingForm").submit();
     }
 </script>

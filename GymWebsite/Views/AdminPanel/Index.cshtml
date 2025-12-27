@@ -1,6 +1,8 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // ÖNEMLİ: Yeni Layout'u burada seçiyoruz
+﻿@model GymWebsite.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Genel Bakış";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="row mb-4">
@@ -11,13 +13,13 @@
 </div>
 
 <div class="row g-4 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-muted small fw-bold mb-1">Toplam Üye</div>
-                        <div class="h3 mb-0 fw-bold text-dark">1,254</div>
+                        <div class="h3 mb-0 fw-bold text-dark">@Model.TotalMembers</div>
                     </div>
                     <div class="fs-1 text-primary opacity-25"><i class="bi bi-people-fill"></i></div>
                 </div>
@@ -25,13 +27,13 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-muted small fw-bold mb-1">Antrenörler</div>
-                        <div class="h3 mb-0 fw-bold text-dark">12</div>
+                        <div class="h3 mb-0 fw-bold text-dark">@Model.TotalTrainers</div>
                     </div>
                     <div class="fs-1 text-success opacity-25"><i class="bi bi-person-badge-fill"></i></div>
                 </div>
@@ -39,75 +41,29 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <div class="text-uppercase text-muted small fw-bold mb-1">Bugünkü Randevu</div>
-                        <div class="h3 mb-0 fw-bold text-dark">45</div>
+                        <div class="h3 mb-0 fw-bold text-dark">@Model.TodayAppointmentsCount</div>
                     </div>
                     <div class="fs-1 text-warning opacity-25"><i class="bi bi-calendar-check-fill"></i></div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="text-uppercase text-muted small fw-bold mb-1">Aylık Ciro</div>
-                        <div class="h3 mb-0 fw-bold text-dark">₺85,000</div>
-                    </div>
-                    <div class="fs-1 text-danger opacity-25"><i class="bi bi-currency-exchange"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header bg-white py-3">
-        <h6 class="m-0 fw-bold text-primary">Son Kayıt Olan Üyeler</h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Ad Soyad</th>
-                        <th>Kayıt Tarihi</th>
-                        <th>Durum</th>
-                        <th>İşlem</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">AY</div>
-                                <span>Ahmet Yılmaz</span>
-                            </div>
-                        </td>
-                        <td>20.12.2025</td>
-                        <td><span class="badge bg-success bg-opacity-10 text-success">Aktif</span></td>
-                        <td><button class="btn btn-sm btn-light border">Detay</button></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">ME</div>
-                                <span>Mehmet Ersoy</span>
-                            </div>
-                        </td>
-                        <td>19.12.2025</td>
-                        <td><span class="badge bg-warning bg-opacity-10 text-warning">Beklemede</span></td>
-                        <td><button class="btn btn-sm btn-light border">Detay</button></td>
-                    </tr>
-                </tbody>
-            </table>
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-5 text-center text-muted">
+                <i class="bi bi-grid-1x2-fill fs-1 mb-3 d-block text-secondary"></i>
+                <h5>Yönetim Paneline Hoş Geldiniz</h5>
+                <p>Sol taraftaki menüyü kullanarak Salon bilgilerini güncelleyebilir, Antrenör ekleyebilir, Kullanıcıları ve Randevuları yönetebilirsiniz.</p>
+            </div>
         </div>
     </div>
 </div>

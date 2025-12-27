@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\Api\**" />
+    <Compile Remove="Views\Gym\**" />
     <Content Remove="Controllers\Api\**" />
+    <Content Remove="Views\Gym\**" />
     <EmbeddedResource Remove="Controllers\Api\**" />
+    <EmbeddedResource Remove="Views\Gym\**" />
     <None Remove="Controllers\Api\**" />
+    <None Remove="Views\Gym\**" />
   </ItemGroup>
 
   <ItemGroup>

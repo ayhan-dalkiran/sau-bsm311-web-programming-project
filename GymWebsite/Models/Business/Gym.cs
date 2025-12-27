@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using GymWebsite.Models.Staff; // Trainer ilişkisi için gerekebilir
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,18 +34,20 @@ public class Gym {
     [Display(Name = "E-posta")]
     public string? Email { get; set; } = string.Empty;
 
-    public ICollection<GymOpenDayTimeSpan> OpenDayTimeSpans { get; set; } = [];
+    // --- YENİ EKLENEN ÇALIŞMA SAATLERİ ---
+    // Admin panelinden metin olarak (Örn: "09:00 - 22:00") girilecek.
 
-    public ICollection<GymService> Services { get; set; } = [];
-
-    /*
-    // Çalışma Saatleri (Basit metin olarak tutabiliriz)
     [Display(Name = "Hafta İçi Çalışma Saatleri")]
-    public string OpeningHoursWeekdays { get; set; } = "09:00 - 22:00";
+    [MaxLength(50, ErrorMessage = "Çok uzun bir değer girdiniz.")]
+    public string WeekdayHours { get; set; } = "09:00 - 22:00";
 
     [Display(Name = "Hafta Sonu Çalışma Saatleri")]
-    public string OpeningHoursWeekend { get; set; } = "10:00 - 20:00";
-    */
+    [MaxLength(50, ErrorMessage = "Çok uzun bir değer girdiniz.")]
+    public string WeekendHours { get; set; } = "10:00 - 20:00";
+    // -------------------------------------
 
-    // Salonun sunduğu hizmetler listesi
+    // İlişkiler
+    public virtual ICollection<GymOpenDayTimeSpan> OpenDayTimeSpans { get; set; } = new List<GymOpenDayTimeSpan>();
+    public virtual ICollection<GymService> Services { get; set; } = new List<GymService>();
+    public virtual ICollection<Trainer> Trainers { get; set; } = new List<Trainer>();
 }

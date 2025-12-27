@@ -1,44 +1,53 @@
-﻿using GymWebsite.Models.Users;
+﻿using GymWebsite.Models.Business;
 using GymWebsite.Models.Staff;
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
+using GymWebsite.Models.Users;
+using Microsoft.EntityFrameworkCore; // Precision için
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GymWebsite.Models; 
+namespace GymWebsite.Models;
+
+// Randevu Durumları
+public enum AppointmentStatus { Pending, Confirmed, Cancelled, Completed }
+
 public class Appointment {
     [Key]
-    [HiddenInput]
     public int Id { get; set; }
 
-    public required UserIdentityAccount GymMember { get; set; }
-
-    public required Trainer Trainer { get; set; }
-
-    [Required(ErrorMessage = "Randevu tarihi ve saati olamaz.")]
-    [Display(Name = "Randevu Tarihi ve Saati")]
+    [Required(ErrorMessage = "Tarih alanı zorunludur.")]
+    [Display(Name = "Randevu Tarihi")]
     public DateTime Date { get; set; }
 
-    [Required(ErrorMessage = "Randevu süresi boş olamaz.")]
-    [Range(0, int.MaxValue, ErrorMessage = "Randevu süresi negatif bir sayı olamaz.")]
+    // --- SNAPSHOT VERİLER (Randevu anındaki değerler) ---
+    // Hizmetin süresi ve fiyatı değişse bile, bu randevununki sabit kalır.
+
     [Display(Name = "Süre (Dakika)")]
     public int DurationInMinutes { get; set; }
 
-    [Required(ErrorMessage = "Randevu ücreti boş olamaz.")]
-    [Precision(17, 2)]
-    [Range(0, 15e9, ErrorMessage = "Randevu ücreti pozitif ve 15 haneden küçük olmalıdır.")]
     [Display(Name = "Ücret")]
+    [Precision(18, 2)] // Para birimi formatı
     public decimal Price { get; set; }
 
     [Display(Name = "Durum")]
-    public AppointmentStatus Status { get; set; } // Onaylandı, Bekliyor, İptal
-}
+    public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
-// Randevu durumunu yönetmek için basit bir Enum
-public enum AppointmentStatus {
-    Pending,   // Bekliyor
-    Confirmed, // Onaylandı
-    Completed, // Tamamlandı
-    Cancelled  // İptal Edildi
+
+    // --- İLİŞKİLER (Foreign Keys & Navigation Properties) ---
+
+    // 1. Randevuyu Alan Üye
+    public string? GymMemberId { get; set; }
+    [ForeignKey("GymMemberId")]
+    public virtual UserIdentityAccount? GymMember { get; set; }
+
+    // 2. Seçilen Antrenör
+    [Required]
+    public int TrainerId { get; set; }
+    [ForeignKey("TrainerId")]
+    public virtual Trainer? Trainer { get; set; }
+
+    // 3. Seçilen Hizmet
+    [Required]
+    public int ServiceId { get; set; }
+    [ForeignKey("ServiceId")]
+    public virtual GymService? Service { get; set; }
 }
